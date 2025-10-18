@@ -6,10 +6,14 @@ import {
   useCalimero,
 } from '@calimero-network/calimero-client';
 import { ToastProvider } from '@calimero-network/mero-ui';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import HomePage from './pages/home';
 import Authenticate from './pages/login/Authenticate';
-import Dashboard from './components/Dashboard';
+import ModelsPage from './pages/models';
+import ScansPage from './pages/scans';
+import UploadModelPage from './pages/upload-model';
+import UploadScanPage from './pages/upload-scan';
 import { AbiClient } from './api/AbiClient';
 
 function AppContent() {
@@ -82,85 +86,142 @@ function AppContent() {
     return () => clearTimeout(timeout);
   }, [app, isAuthenticated, loading]);
 
+  // Helper component to render protected routes
+  const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+    if (!isAuthenticated) {
+      return (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold mb-2">
+              Authentication Required
+            </h2>
+            <p className="text-gray-600 mb-4">
+              Please authenticate first to access this page.
+            </p>
+            <button
+              onClick={() => (window.location.href = '/')}
+              className="button button-primary"
+            >
+              Go to Login
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    if (loading) {
+      return (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold mb-2">
+              Loading Medical AI File Transfer...
+            </h2>
+            <p className="text-gray-600">Connecting to Calimero network</p>
+            <div className="mt-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center max-w-md">
+            <h2 className="text-xl font-semibold mb-2 text-red-600">
+              Connection Error
+            </h2>
+            <p className="text-gray-600 mb-4">{error}</p>
+            <div className="space-y-2">
+              <p className="text-sm text-gray-500">Troubleshooting steps:</p>
+              <ul className="text-sm text-gray-500 text-left">
+                <li>1. Ensure Calimero nodes are running</li>
+                <li>2. Check network connectivity</li>
+                <li>3. Verify application ID is correct</li>
+              </ul>
+              <button
+                onClick={() => window.location.reload()}
+                className="button button-primary"
+                style={{ marginTop: 'var(--spacing-l)' }}
+              >
+                Retry Connection
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (!api) {
+      return (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold mb-2">Initializing...</h2>
+            <p className="text-gray-600">Setting up the application</p>
+          </div>
+        </div>
+      );
+    }
+
+    return <>{children}</>;
+  };
+
   return (
     <Routes>
       {/* Authentication route */}
       <Route
         path="/"
-        element={!isAuthenticated ? <Authenticate /> : <HomePage />}
+        element={!isAuthenticated ? <Authenticate /> : <HomePage api={api!} />}
       />
 
       {/* Home route */}
-      <Route path="/home" element={<HomePage />} />
-
-      {/* Dashboard route - only accessible when authenticated and API is ready */}
       <Route
-        path="/dashboard"
+        path="/home"
         element={
-          !isAuthenticated ? (
-            <div className="flex items-center justify-center min-h-screen">
-              <div className="text-center">
-                <h2 className="text-xl font-semibold mb-2">
-                  Authentication Required
-                </h2>
-                <p className="text-gray-600 mb-4">
-                  Please authenticate first to access the dashboard.
-                </p>
-                <button
-                  onClick={() => (window.location.href = '/')}
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                  Go to Login
-                </button>
-              </div>
-            </div>
-          ) : loading ? (
-            <div className="flex items-center justify-center min-h-screen">
-              <div className="text-center">
-                <h2 className="text-xl font-semibold mb-2">
-                  Loading Medical AI File Transfer...
-                </h2>
-                <p className="text-gray-600">Connecting to Calimero network</p>
-                <div className="mt-4">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                </div>
-              </div>
-            </div>
-          ) : error ? (
-            <div className="flex items-center justify-center min-h-screen">
-              <div className="text-center max-w-md">
-                <h2 className="text-xl font-semibold mb-2 text-red-600">
-                  Connection Error
-                </h2>
-                <p className="text-gray-600 mb-4">{error}</p>
-                <div className="space-y-2">
-                  <p className="text-sm text-gray-500">
-                    Troubleshooting steps:
-                  </p>
-                  <ul className="text-sm text-gray-500 text-left">
-                    <li>1. Ensure Calimero nodes are running</li>
-                    <li>2. Check network connectivity</li>
-                    <li>3. Verify application ID is correct</li>
-                  </ul>
-                  <button
-                    onClick={() => window.location.reload()}
-                    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                  >
-                    Retry Connection
-                  </button>
-                </div>
-              </div>
-            </div>
-          ) : api ? (
-            <Dashboard api={api} />
-          ) : (
-            <div className="flex items-center justify-center min-h-screen">
-              <div className="text-center">
-                <h2 className="text-xl font-semibold mb-2">Initializing...</h2>
-                <p className="text-gray-600">Setting up the application</p>
-              </div>
-            </div>
-          )
+          <ProtectedRoute>
+            <HomePage api={api!} />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Models route */}
+      <Route
+        path="/models"
+        element={
+          <ProtectedRoute>
+            <ModelsPage api={api!} />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Scans route */}
+      <Route
+        path="/scans"
+        element={
+          <ProtectedRoute>
+            <ScansPage api={api!} />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Upload Model route */}
+      <Route
+        path="/upload-model"
+        element={
+          <ProtectedRoute>
+            <UploadModelPage api={api!} />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Upload Scan route */}
+      <Route
+        path="/upload-scan"
+        element={
+          <ProtectedRoute>
+            <UploadScanPage api={api!} />
+          </ProtectedRoute>
         }
       />
 
@@ -176,7 +237,7 @@ function AppContent() {
               </p>
               <button
                 onClick={() => (window.location.href = '/')}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                className="button button-primary"
               >
                 Go Home
               </button>
@@ -188,6 +249,37 @@ function AppContent() {
   );
 }
 
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+      retry: (failureCount, error) => {
+        // Don't retry on rate limit errors
+        if (error?.message?.includes('Rate limit exceeded')) {
+          return false;
+        }
+        // Retry up to 3 times for other errors
+        return failureCount < 3;
+      },
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
+      refetchOnWindowFocus: false,
+    },
+    mutations: {
+      retry: (failureCount, error) => {
+        // Don't retry mutations on rate limit errors
+        if (error?.message?.includes('Rate limit exceeded')) {
+          return false;
+        }
+        // Retry up to 2 times for other errors
+        return failureCount < 2;
+      },
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000), // Exponential backoff
+    },
+  },
+});
+
 export default function App() {
   const [clientAppId] = useState<string>(
     'HELDXwknx9tVnj3JKfa3EMyGB9JEsApeijVHzKn5cRVX', // Application ID from bootstrap
@@ -195,15 +287,17 @@ export default function App() {
 
   return (
     <BrowserRouter basename="/">
-      <CalimeroProvider
-        clientApplicationId={clientAppId}
-        applicationPath={window.location.pathname || '/'}
-        mode={AppMode.MultiContext}
-      >
-        <ToastProvider>
-          <AppContent />
-        </ToastProvider>
-      </CalimeroProvider>
+      <QueryClientProvider client={queryClient}>
+        <CalimeroProvider
+          clientApplicationId={clientAppId}
+          applicationPath={window.location.pathname || '/'}
+          mode={AppMode.MultiContext}
+        >
+          <ToastProvider>
+            <AppContent />
+          </ToastProvider>
+        </CalimeroProvider>
+      </QueryClientProvider>
     </BrowserRouter>
   );
 }

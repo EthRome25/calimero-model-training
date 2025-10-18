@@ -16,7 +16,7 @@ export interface ModelFile {
   file_size: number;
   file_data: string;
   uploader: string;
-  created_at: number;
+  created_at: number | string | null | undefined;
   is_public: boolean;
 }
 

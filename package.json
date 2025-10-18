@@ -3,7 +3,7 @@
     "prepare": "husky",
     "logic:build": "bash ./logic/build.sh",
     "logic:clean": "rm -rf ./logic/target ./logic/res",
-    "logic:sync": "bash ./scripts/sync-wasm.sh",
+    "logic:sync": "bash ./scripts/sync-wasm.sh logic/res/medical_ai_file_transfer.wasm",
     "logic:watch": "chokidar \"logic/res/**/*\" -c \"node scripts/on-res-change.mjs {path}\"",
     "app:install": "pnpm --dir app install",
     "app:dev": "concurrently -n web,res -c green,magenta \"pnpm --dir app dev\" \"pnpm run logic:watch\"",

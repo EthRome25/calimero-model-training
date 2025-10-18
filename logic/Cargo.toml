@@ -11,6 +11,7 @@ crate-type = ["cdylib"]
 thiserror = "1.0.56"
 calimero-sdk = { git = "https://github.com/calimero-network/core", branch = "master" }
 calimero-storage = { git = "https://github.com/calimero-network/core", branch = "master" }
+base64 = "0.22"
 
 [build-dependencies]
 calimero-wasm-abi = { git = "https://github.com/calimero-network/core", branch = "master" }

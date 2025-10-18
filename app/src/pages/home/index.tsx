@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCalimero } from '@calimero-network/calimero-client';
 import { AbiClient } from '../../api/AbiClient';

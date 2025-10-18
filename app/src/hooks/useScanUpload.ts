@@ -15,34 +15,34 @@ export const useScanUpload = (api: AbiClient | null) => {
       if (!api) throw new Error('API not available');
 
       try {
-        // Convert file to base64
-        const fileData = await fileToBase64(formData.file);
+        // Process each scan individually
+        const uploadPromises = formData.scans.map(async (scan) => {
+          const fileData = await fileToBase64(scan.file);
+          
+          const uploadData = {
+            scan_type: scan.scanType,
+            body_part: scan.bodyPart,
+            file_data: fileData,
+          };
 
-        const uploadData = {
-          patient_id: formData.patientId,
-          scan_type: formData.scanType,
-          body_part: formData.bodyPart,
-          file_data: fileData,
-          uploader: formData.uploader,
-        };
+          console.log('=== SCAN UPLOAD API CALL ===');
+          console.log('Upload parameters:', {
+            scan_type: uploadData.scan_type,
+            body_part: uploadData.body_part,
+            file_data_length: uploadData.file_data.length,
+          });
 
-        console.log('=== SCAN UPLOAD API CALL ===');
-        console.log('Upload parameters:', {
-          patient_id: uploadData.patient_id,
-          scan_type: uploadData.scan_type,
-          body_part: uploadData.body_part,
-          file_data_length: uploadData.file_data?.length || 0,
-          uploader: uploadData.uploader,
+          return await api.uploadScan(uploadData);
         });
 
-        const result = await api.uploadScan(uploadData);
-        console.log('Scan upload result:', result);
+        const results = await Promise.all(uploadPromises);
+        console.log('All scans upload results:', results);
 
-        return result;
+        return results;
       } catch (error) {
         if (isRateLimitError(error)) {
           throw createRateLimitError(
-            'Rate limit exceeded while uploading scan',
+            'Rate limit exceeded while uploading scans',
           );
         }
         throw error;

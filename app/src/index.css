@@ -240,7 +240,7 @@ body {
 .calimero-stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--spacing-l);
+  gap: var(--spacing-xl);
   margin-top: var(--spacing-xl);
 }
 
@@ -248,7 +248,7 @@ body {
   background: var(--background-tertiary);
   border: 1px solid var(--border-secondary);
   border-radius: 8px;
-  padding: var(--spacing-l);
+  padding: var(--spacing-xl);
   text-align: center;
   transition: all 0.3s ease;
 }
@@ -846,8 +846,8 @@ html body .calimero-navbar .calimero-connect-button *[style*="rgb(234, 88, 12)"]
 .horizontal-card__meta {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-s);
-  margin-bottom: var(--spacing-m);
+  gap: var(--spacing-m);
+  margin-bottom: var(--spacing-l);
 }
 
 .horizontal-card__badge {
@@ -882,9 +882,9 @@ html body .calimero-navbar .calimero-connect-button *[style*="rgb(234, 88, 12)"]
 
 .horizontal-card__stats {
   display: flex;
-  gap: var(--spacing-l);
-  margin-top: var(--spacing-m);
-  padding-top: var(--spacing-m);
+  gap: var(--spacing-xl);
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-xl);
   border-top: 1px solid var(--border-secondary);
 }
 
@@ -1045,6 +1045,10 @@ html body .calimero-navbar .calimero-connect-button *[style*="rgb(234, 88, 12)"]
   .button-group button {
     flex: none !important;
     width: 100% !important;
+  }
+
+  .training-details-grid {
+    grid-template-columns: 1fr !important;
   }
 }
 
@@ -1333,6 +1337,248 @@ html body .calimero-navbar .calimero-connect-button *[style*="rgb(234, 88, 12)"]
 .file-info__warning {
   font-weight: 600;
   color: #f59e0b;
+}
+
+.files-list {
+  margin-top: var(--spacing-s);
+  border: 1px solid var(--border-default);
+  border-radius: var(--border-radius-s);
+  background: var(--background-secondary);
+  overflow: hidden;
+}
+
+.files-list__header {
+  padding: var(--spacing-s) var(--spacing-m);
+  background: var(--background-tertiary);
+  border-bottom: 1px solid var(--border-default);
+  font-weight: 600;
+  color: var(--content-on-surface-default);
+  font-size: 0.875rem;
+}
+
+.files-list .file-info {
+  margin-top: 0;
+  border: none;
+  border-bottom: 1px solid var(--border-default);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.files-list .file-info:last-child {
+  border-bottom: none;
+}
+
+/* Form section header with add button */
+.form-section__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-m);
+}
+
+/* Add file button */
+.button--add-file {
+  background: var(--surface-action-default);
+  color: var(--content-on-surface-action-default);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  margin-left: var(--spacing-m);
+}
+
+.button--add-file:hover {
+  background: #9dff0a;
+  transform: scale(1.05);
+}
+
+.button--add-file:active {
+  transform: scale(0.95);
+}
+
+/* File input container */
+.file-input-container {
+  margin-bottom: var(--spacing-m);
+}
+
+.file-input-container:last-child {
+  margin-bottom: 0;
+}
+
+/* File input wrapper */
+.file-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-s);
+}
+
+.file-input-wrapper .form-input--file {
+  flex: 1;
+}
+
+/* Remove file button */
+.button--remove-file {
+  background: #2a2a2a;
+  color: #ef4444;
+  border: 2px solid #ef4444;
+  border-radius: 50%;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px;
+  min-height: 40px;
+  max-width: 40px;
+  max-height: 40px;
+  text-align: center;
+  padding: 0 !important;
+  padding-left: 4px !important;
+  padding-top: 3px !important;
+  font-size: 25px;
+  position: absolute;
+  top: var(--spacing-m);
+  right: var(--spacing-m);
+  z-index: 10;
+}
+
+.button--remove-file:hover {
+  background: #ef4444;
+  color: white;
+  transform: scale(1.05);
+}
+
+.button--remove-file:active {
+  transform: scale(0.95);
+}
+
+/* File input separator */
+.file-input-separator {
+  height: 1px;
+  background: var(--border-default);
+  margin: var(--spacing-m) 0;
+  position: relative;
+}
+
+.file-input-separator::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 1px;
+  background: var(--background-primary);
+}
+
+/* Scan input container */
+.scan-input-container {
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-l);
+  background: var(--background-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--border-radius-m);
+  position: relative;
+}
+
+.scan-input-container:last-child {
+  margin-bottom: 0;
+}
+
+.scan-input-container--with-border {
+  border-top: 2px solid rgba(181, 255, 17, 0.25);
+}
+
+/* Scan input header */
+.scan-input-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-l);
+  padding-bottom: var(--spacing-s);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.scan-input-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--content-on-surface-default);
+  margin: 0;
+}
+
+/* Scan input grid */
+.scan-input-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-m);
+}
+
+@media (min-width: 768px) {
+  .scan-input-grid {
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: var(--spacing-m);
+    align-items: start;
+  }
+}
+
+/* Remove button field */
+.form-field--remove {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 60px;
+}
+
+.form-label--invisible {
+  visibility: hidden;
+  height: 1.5rem;
+  margin: 0;
+  padding: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--content-on-surface-default);
+}
+
+/* Add button container */
+.scan-add-button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-l);
+  border-top: 1px solid var(--border-default);
+}
+
+.scan-add-button-container .button--add-file {
+  margin-left: 0;
+  border-radius: var(--border-radius-m);
+  width: auto;
+  height: auto;
+  padding: var(--spacing-m) var(--spacing-l);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Scan input separator */
+.scan-input-separator {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--border-default), transparent);
+  margin: var(--spacing-xl) 0;
+  position: relative;
+}
+
+.scan-input-separator::before {
+  content: '📋';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--background-primary);
+  padding: 0 var(--spacing-s);
+  font-size: 1.2rem;
 }
 
 .button--large {

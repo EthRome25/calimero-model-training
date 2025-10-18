@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
-import { zodValidator } from '@tanstack/zod-form-adapter';
 import { AbiClient } from '../../api/AbiClient';
 import Layout from '../../components/Layout';
 import { useScanUpload } from '../../hooks/useScanUpload';
@@ -12,20 +11,57 @@ interface UploadScanPageProps {
   api: AbiClient;
 }
 
+interface ScanInput {
+  id: number;
+  file: File | null;
+  scanType: 'MRI' | 'CT' | 'PET' | 'Ultrasound' | 'X-Ray' | '';
+  bodyPart: 'brain' | 'chest' | 'abdomen' | 'spine' | 'pelvis' | 'extremities' | '';
+}
+
 export default function UploadScanPage({ api }: UploadScanPageProps) {
   const uploadMutation = useScanUpload(api);
+  const [scanInputs, setScanInputs] = useState<ScanInput[]>([
+    { id: 1, file: null, scanType: '', bodyPart: '' }
+  ]);
+
+  const addScanInput = () => {
+    const newId = Math.max(...scanInputs.map(input => input.id)) + 1;
+    setScanInputs([...scanInputs, { id: newId, file: null, scanType: '', bodyPart: '' }]);
+  };
+
+  const removeScanInput = (id: number) => {
+    if (scanInputs.length > 1) {
+      setScanInputs(scanInputs.filter(input => input.id !== id));
+      updateFormScans();
+    }
+  };
+
+  const updateScanInput = (id: number, updates: Partial<Omit<ScanInput, 'id'>>) => {
+    setScanInputs(scanInputs.map(input => 
+      input.id === id ? { ...input, ...updates } : input
+    ));
+    updateFormScans();
+  };
+
+  const updateFormScans = () => {
+    const validScans = scanInputs
+      .filter(input => input.file && input.scanType && input.bodyPart)
+      .map(input => ({
+        file: input.file!,
+        scanType: input.scanType as 'MRI' | 'CT' | 'PET' | 'Ultrasound' | 'X-Ray',
+        bodyPart: input.bodyPart as 'brain' | 'chest' | 'abdomen' | 'spine' | 'pelvis' | 'extremities',
+      }));
+    form.setFieldValue('scans', validScans);
+  };
 
   const form = useForm({
     defaultValues: {
-      file: undefined as File | undefined,
-      name: '',
-      description: '',
-      patientId: '',
-      scanType: '' as 'MRI' | 'CT' | 'PET' | 'Ultrasound' | 'X-Ray' | '',
-      bodyPart: '' as 'brain' | 'chest' | 'abdomen' | 'spine' | 'pelvis' | 'extremities' | '',
-      uploader: '',
+      scans: [] as Array<{
+        file: File;
+        scanType: 'MRI' | 'CT' | 'PET' | 'Ultrasound' | 'X-Ray';
+        bodyPart: 'brain' | 'chest' | 'abdomen' | 'spine' | 'pelvis' | 'extremities';
+      }>,
     },
-    validatorAdapter: zodValidator(),
     validators: {
       onChange: scanUploadSchema,
     },
@@ -37,13 +73,14 @@ export default function UploadScanPage({ api }: UploadScanPageProps) {
         await uploadMutation.mutateAsync(value);
         // Reset form on success
         form.reset();
-        alert('Scan uploaded successfully!');
+        setScanInputs([{ id: 1, file: null, scanType: '', bodyPart: '' }]);
+        alert('Scans uploaded successfully!');
       } catch (error) {
-        console.error('Error uploading scan:', error);
+        console.error('Error uploading scans:', error);
         if (isRateLimitError(error)) {
           alert(getRateLimitMessage(error));
         } else {
-          alert('Error uploading scan. Please try again.');
+          alert('Error uploading scans. Please try again.');
         }
       }
     },
@@ -70,240 +107,137 @@ export default function UploadScanPage({ api }: UploadScanPageProps) {
               e.stopPropagation();
               form.handleSubmit();
             }}
-            className="upload-form upload-form--two-column"
+            className="upload-form"
           >
-            <div className="form-columns">
-              {/* Left Column */}
-              <div className="form-column">
-                {/* File Upload Section */}
-                <div className="form-section">
-                  <h3 className="form-section__title">📁 Medical Image File</h3>
+            {/* Scans Section */}
+            <div className="form-section">
+              <div className="form-section__header">
+                <div>
+                  <h3 className="form-section__title">📁 Medical Scans</h3>
                   <p className="form-section__description">
-                    Upload your medical scan file. Maximum size: 40KB for optimal performance.
+                    Upload your medical scan files with their details. Maximum size per file: 40KB.
                   </p>
-                  
-                  <form.Field
-                    name="file"
-                    children={(field) => (
-                      <div className="form-field">
-                        <label className="form-label">
-                          Medical Image File *
-                        </label>
-                        <input
-                          type="file"
-                          accept=".dcm,.nii,.nii.gz,.jpg,.png,.tiff"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              console.log('File selected:', file);
-                              field.handleChange(file);
-                              // Auto-fill name if empty
-                              if (!form.getFieldValue('name')) {
-                                form.setFieldValue('name', file.name.replace(/\.[^/.]+$/, ''));
-                              }
-                            }
-                          }}
-                          className="form-input form-input--file"
-                        />
-                        {field.state.meta.errors.length > 0 && (
-                          <div className="form-error">
-                            {formatFormError(field.state.meta.errors[0])}
-                          </div>
-                        )}
-                        {field.state.value && (
-                          <div className="file-info">
-                            <div className="file-info__name">
-                              📄 {field.state.value.name}
-                            </div>
-                            <div className={`file-info__size ${getFileSizeInKB(field.state.value.size) > 40 ? 'file-info__size--error' : ''}`}>
-                              📊 {formatFileSize(field.state.value.size)}
-                              {getFileSizeInKB(field.state.value.size) > 40 && (
-                                <span className="file-info__warning"> (Exceeds 40KB limit)</span>
-                              )}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  />
-                </div>
-
-                {/* Basic Information Section */}
-                <div className="form-section">
-                  <h3 className="form-section__title">📋 Basic Information</h3>
-                  <p className="form-section__description">
-                    Provide essential details about the medical scan.
-                  </p>
-
-                  <form.Field
-                    name="name"
-                    children={(field) => (
-                      <div className="form-field">
-                        <label className="form-label">
-                          Scan Name *
-                        </label>
-                        <input
-                          type="text"
-                          value={field.state.value}
-                          onChange={(e) => field.handleChange(e.target.value)}
-                          placeholder="e.g., Brain MRI Scan"
-                          className="form-input"
-                        />
-                        {field.state.meta.errors.length > 0 && (
-                          <div className="form-error">
-                            {formatFormError(field.state.meta.errors[0])}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  />
-
-                  <form.Field
-                    name="patientId"
-                    children={(field) => (
-                      <div className="form-field">
-                        <label className="form-label">
-                          Patient ID *
-                        </label>
-                        <input
-                          type="text"
-                          value={field.state.value}
-                          onChange={(e) => field.handleChange(e.target.value)}
-                          placeholder="e.g., PAT-001"
-                          className="form-input"
-                        />
-                        {field.state.meta.errors.length > 0 && (
-                          <div className="form-error">
-                            {formatFormError(field.state.meta.errors[0])}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  />
-
-                  <form.Field
-                    name="description"
-                    children={(field) => (
-                      <div className="form-field">
-                        <label className="form-label">
-                          Description *
-                        </label>
-                        <textarea
-                          value={field.state.value}
-                          onChange={(e) => field.handleChange(e.target.value)}
-                          placeholder="Describe the medical scan, including any relevant clinical information..."
-                          rows={4}
-                          className="form-textarea"
-                        />
-                        {field.state.meta.errors.length > 0 && (
-                          <div className="form-error">
-                            {formatFormError(field.state.meta.errors[0])}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  />
                 </div>
               </div>
-
-              {/* Right Column */}
-              <div className="form-column">
-                {/* Medical Details Section */}
-                <div className="form-section">
-                  <h3 className="form-section__title">🏥 Medical Details</h3>
-                  <p className="form-section__description">
-                    Specify the type of scan and anatomical region.
-                  </p>
-
-                  <form.Field
-                    name="scanType"
-                    children={(field) => (
-                      <div className="form-field">
-                        <label className="form-label">
-                          Scan Type *
-                        </label>
-                        <select
-                          value={field.state.value}
-                          onChange={(e) => field.handleChange(e.target.value as any)}
-                          className="form-select"
-                        >
-                          <option value="">Select scan type</option>
-                          <option value="MRI">🧠 MRI (Magnetic Resonance Imaging)</option>
-                          <option value="CT">🔬 CT (Computed Tomography)</option>
-                          <option value="PET">⚛️ PET (Positron Emission Tomography)</option>
-                          <option value="Ultrasound">📡 Ultrasound</option>
-                          <option value="X-Ray">📷 X-Ray</option>
-                        </select>
-                        {field.state.meta.errors.length > 0 && (
-                          <div className="form-error">
-                            {formatFormError(field.state.meta.errors[0])}
-                          </div>
+              
+              <form.Field
+                name="scans"
+                children={(field) => (
+                  <div className="form-field">
+                    {scanInputs.map((scanInput, index) => (
+                      <div key={scanInput.id} className={`scan-input-container ${index > 0 ? 'scan-input-container--with-border' : ''}`}>
+                        
+                        <div className="scan-input-header">
+                          <h4 className="scan-input-title">Scan #{index + 1}</h4>
+                        </div>
+                        
+                        {/* Remove Button - Positioned at top-right */}
+                        {scanInputs.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeScanInput(scanInput.id)}
+                            className="button button--remove-file"
+                            title="Remove this scan"
+                          >
+                            ✕
+                          </button>
                         )}
+                        
+                        <div className="scan-input-grid">
+                          {/* File Upload */}
+                          <div className="form-field">
+                            <label className="form-label">
+                              Medical Image File *
+                            </label>
+                            <input
+                              type="file"
+                              accept=".dcm,.nii,.nii.gz,.jpg,.png,.tiff"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0] || null;
+                                updateScanInput(scanInput.id, { file });
+                                if (file) {
+                                  console.log('File selected:', file);
+                                }
+                              }}
+                              className="form-input form-input--file"
+                            />
+                            {scanInput.file && (
+                              <div className="file-info">
+                                <div className="file-info__name">
+                                  📄 {scanInput.file.name}
+                                </div>
+                                <div className={`file-info__size ${getFileSizeInKB(scanInput.file.size) > 40 ? 'file-info__size--error' : ''}`}>
+                                  📊 {formatFileSize(scanInput.file.size)}
+                                  {getFileSizeInKB(scanInput.file.size) > 40 && (
+                                    <span className="file-info__warning"> (Exceeds 40KB limit)</span>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Scan Type */}
+                          <div className="form-field">
+                            <label className="form-label">
+                              Scan Type *
+                            </label>
+                            <select
+                              value={scanInput.scanType}
+                              onChange={(e) => updateScanInput(scanInput.id, { scanType: e.target.value as any })}
+                              className="form-select"
+                            >
+                              <option value="">Select scan type</option>
+                              <option value="MRI">🧠 MRI (Magnetic Resonance Imaging)</option>
+                              <option value="CT">🔬 CT (Computed Tomography)</option>
+                              <option value="PET">⚛️ PET (Positron Emission Tomography)</option>
+                              <option value="Ultrasound">📡 Ultrasound</option>
+                              <option value="X-Ray">📷 X-Ray</option>
+                            </select>
+                          </div>
+                          
+                          {/* Body Part */}
+                          <div className="form-field">
+                            <label className="form-label">
+                              Body Part *
+                            </label>
+                            <select
+                              value={scanInput.bodyPart}
+                              onChange={(e) => updateScanInput(scanInput.id, { bodyPart: e.target.value as any })}
+                              className="form-select"
+                            >
+                              <option value="">Select body part</option>
+                              <option value="brain">🧠 Brain</option>
+                              <option value="chest">🫁 Chest</option>
+                              <option value="abdomen">🫀 Abdomen</option>
+                              <option value="spine">🦴 Spine</option>
+                              <option value="pelvis">🦴 Pelvis</option>
+                              <option value="extremities">🦵 Extremities</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {/* Add Button */}
+                    <div className="scan-add-button-container">
+                      <button
+                        type="button"
+                        onClick={addScanInput}
+                        className="button button--add-file"
+                        title="Add another scan"
+                      >
+                        ➕ Add Scan
+                      </button>
+                    </div>
+                    
+                    {field.state.meta.errors.length > 0 && (
+                      <div className="form-error">
+                        {formatFormError(field.state.meta.errors[0])}
                       </div>
                     )}
-                  />
-
-                  <form.Field
-                    name="bodyPart"
-                    children={(field) => (
-                      <div className="form-field">
-                        <label className="form-label">
-                          Body Part *
-                        </label>
-                        <select
-                          value={field.state.value}
-                          onChange={(e) => field.handleChange(e.target.value as any)}
-                          className="form-select"
-                        >
-                          <option value="">Select body part</option>
-                          <option value="brain">🧠 Brain</option>
-                          <option value="chest">🫁 Chest</option>
-                          <option value="abdomen">🫀 Abdomen</option>
-                          <option value="spine">🦴 Spine</option>
-                          <option value="pelvis">🦴 Pelvis</option>
-                          <option value="extremities">🦵 Extremities</option>
-                        </select>
-                        {field.state.meta.errors.length > 0 && (
-                          <div className="form-error">
-                            {formatFormError(field.state.meta.errors[0])}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  />
-                </div>
-
-                {/* Uploader Information */}
-                <div className="form-section">
-                  <h3 className="form-section__title">👤 Uploader Information</h3>
-                  <p className="form-section__description">
-                    Provide your identification for record keeping.
-                  </p>
-
-                  <form.Field
-                    name="uploader"
-                    children={(field) => (
-                      <div className="form-field">
-                        <label className="form-label">
-                          Uploader Name/ID *
-                        </label>
-                        <input
-                          type="text"
-                          value={field.state.value}
-                          onChange={(e) => field.handleChange(e.target.value)}
-                          placeholder="e.g., Dr. Smith, Researcher-001"
-                          className="form-input"
-                        />
-                        {field.state.meta.errors.length > 0 && (
-                          <div className="form-error">
-                            {formatFormError(field.state.meta.errors[0])}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  />
-                </div>
-              </div>
+                  </div>
+                )}
+              />
             </div>
 
             {/* Submit Section */}

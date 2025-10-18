@@ -13,6 +13,46 @@ export interface ModelMetadata {
   model_params: string;
 }
 
+export interface ModelFile {
+  id: string;
+  name: string;
+  description: string;
+  model_type: string;
+  version: string;
+  file_size: number;
+  file_data: string;
+  uploader: string;
+  created_at: number;
+  is_public: boolean;
+}
+
+export interface ScanFile {
+  id: string;
+  patient_id: string;
+  scan_type: string;
+  body_part: string;
+  file_size: number;
+  file_data: string;
+  uploader: string;
+  created_at: number;
+  annotation_count: number;
+}
+
+
+
+
+
+
+
+export type AbiEvent =
+  | { name: "ModelUploaded" }
+  | { name: "ScanUploaded" }
+  | { name: "ModelDownloaded" }
+  | { name: "ScanDownloaded" }
+  | { name: "AnnotationAdded" }
+  | { name: "FileDeleted" }
+;
+
 
 /**
  * Utility class for handling byte conversions in Calimero
@@ -134,8 +174,8 @@ export class AbiClient {
   /**
    * upload_current_model
    */
-  public async uploadCurrentModel(params: { name: string; description: string; model_type: string; version: string; file_bytes: CalimeroBytes; uploader: string; prediction_accuracy: number; date: number; model_params: string; is_public: boolean }): Promise<string> {
-    const response = await this.app.execute(this.context, 'upload_current_model', convertCalimeroBytesForWasm(params));
+  public async uploadModel(params: { name: string; description: string; model_type: string; version: string; file_data: string; uploader: string; is_public: boolean }): Promise<string> {
+    const response = await this.app.execute(this.context, 'upload_model', params);
     if (response.success) {
       return response.result as string;
     } else {
@@ -150,6 +190,138 @@ export class AbiClient {
     const response = await this.app.execute(this.context, 'get_current_model_metadata', {});
     if (response.success) {
       return response.result as ModelMetadata;
+    } else {
+      throw new Error(response.error || 'Execution failed');
+    }
+  }
+
+  /**
+   * get_public_models
+   */
+  public async getPublicModels(): Promise<ModelFile[]> {
+    const response = await this.app.execute(this.context, 'get_public_models', {});
+    if (response.success) {
+      return response.result as ModelFile[];
+    } else {
+      throw new Error(response.error || 'Execution failed');
+    }
+  }
+
+  /**
+   * download_model
+   */
+  public async downloadModel(params: { model_id: string; downloader: string }): Promise<ModelFile> {
+    const response = await this.app.execute(this.context, 'download_model', params);
+    if (response.success) {
+      return response.result as ModelFile;
+    } else {
+      throw new Error(response.error || 'Execution failed');
+    }
+  }
+
+  /**
+   * upload_scan
+   */
+  public async uploadScan(params: { patient_id: string; scan_type: string; body_part: string; file_data: string; uploader: string }): Promise<string> {
+    const response = await this.app.execute(this.context, 'upload_scan', params);
+    if (response.success) {
+      return response.result as string;
+    } else {
+      throw new Error(response.error || 'Execution failed');
+    }
+  }
+
+  /**
+   * get_scan
+   */
+  public async getScan(params: { scan_id: string }): Promise<ScanFile> {
+    const response = await this.app.execute(this.context, 'get_scan', params);
+    if (response.success) {
+      return response.result as ScanFile;
+    } else {
+      throw new Error(response.error || 'Execution failed');
+    }
+  }
+
+  /**
+   * get_scans_by_patient
+   */
+  public async getScansByPatient(params: { patient_id: string }): Promise<ScanFile[]> {
+    const response = await this.app.execute(this.context, 'get_scans_by_patient', params);
+    if (response.success) {
+      return response.result as ScanFile[];
+    } else {
+      throw new Error(response.error || 'Execution failed');
+    }
+  }
+
+  /**
+   * download_scan
+   */
+  public async downloadScan(params: { scan_id: string; downloader: string }): Promise<ScanFile> {
+    const response = await this.app.execute(this.context, 'download_scan', params);
+    if (response.success) {
+      return response.result as ScanFile;
+    } else {
+      throw new Error(response.error || 'Execution failed');
+    }
+  }
+
+  /**
+   * add_annotation
+   */
+  public async addAnnotation(params: { scan_id: string; _label: string }): Promise<string> {
+    const response = await this.app.execute(this.context, 'add_annotation', params);
+    if (response.success) {
+      return response.result as string;
+    } else {
+      throw new Error(response.error || 'Execution failed');
+    }
+  }
+
+  /**
+   * get_file_metadata
+   */
+  public async getFileMetadata(params: { file_id: string }): Promise<FileMetadata> {
+    const response = await this.app.execute(this.context, 'get_file_metadata', params);
+    if (response.success) {
+      return response.result as FileMetadata;
+    } else {
+      throw new Error(response.error || 'Execution failed');
+    }
+  }
+
+  /**
+   * get_all_metadata
+   */
+  public async getAllMetadata(): Promise<FileMetadata[]> {
+    const response = await this.app.execute(this.context, 'get_all_metadata', {});
+    if (response.success) {
+      return response.result as FileMetadata[];
+    } else {
+      throw new Error(response.error || 'Execution failed');
+    }
+  }
+
+  /**
+   * delete_file
+   */
+  public async deleteFile(params: { file_id: string; file_type: string }): Promise<void> {
+    const response = await this.app.execute(this.context, 'delete_file', params);
+    if (response.success) {
+      return response.result as void;
+    } else {
+      throw new Error(response.error || 'Execution failed');
+    }
+  }
+
+  /**
+   * get_stats
+   */
+  public async getStats(): Promise<string> {
+    const response = await this.app.execute(this.context, 'get_stats', {});
+    if (response.success) {
+      return response.result as string;
     } else {
       throw new Error(response.error || 'Execution failed');
     }

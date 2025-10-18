@@ -3,7 +3,7 @@ import { z } from 'zod';
 // File size limit: 40KB = 40 * 1024 bytes
 const MAX_FILE_SIZE = 40 * 1024;
 
-export const scanUploadSchema = z.object({
+const scanItemSchema = z.object({
   file: z
     .instanceof(File, { message: 'Please select a file' })
     .refine((file) => file.size <= MAX_FILE_SIZE, {
@@ -26,26 +26,6 @@ export const scanUploadSchema = z.object({
       message: 'Please select a valid medical image file (.dcm, .nii, .nii.gz, .jpg, .png, .tiff)',
     }),
   
-  name: z
-    .string()
-    .min(1, 'Name is required')
-    .min(3, 'Name must be at least 3 characters')
-    .max(100, 'Name must be less than 100 characters')
-    .regex(/^[a-zA-Z0-9\s\-_]+$/, 'Name can only contain letters, numbers, spaces, hyphens, and underscores'),
-  
-  description: z
-    .string()
-    .min(1, 'Description is required')
-    .min(10, 'Description must be at least 10 characters')
-    .max(500, 'Description must be less than 500 characters'),
-  
-  patientId: z
-    .string()
-    .min(1, 'Patient ID is required')
-    .min(3, 'Patient ID must be at least 3 characters')
-    .max(50, 'Patient ID must be less than 50 characters')
-    .regex(/^[a-zA-Z0-9\-_]+$/, 'Patient ID can only contain letters, numbers, hyphens, and underscores'),
-  
   scanType: z
     .enum(['MRI', 'CT', 'PET', 'Ultrasound', 'X-Ray'], {
       errorMap: () => ({ message: 'Please select a valid scan type' }),
@@ -55,13 +35,12 @@ export const scanUploadSchema = z.object({
     .enum(['brain', 'chest', 'abdomen', 'spine', 'pelvis', 'extremities'], {
       errorMap: () => ({ message: 'Please select a valid body part' }),
     }),
-  
-  uploader: z
-    .string()
-    .min(1, 'Uploader name is required')
-    .min(2, 'Uploader name must be at least 2 characters')
-    .max(50, 'Uploader name must be less than 50 characters')
-    .regex(/^[a-zA-Z0-9\s\-_]+$/, 'Uploader name can only contain letters, numbers, spaces, hyphens, and underscores'),
+});
+
+export const scanUploadSchema = z.object({
+  scans: z
+    .array(scanItemSchema)
+    .min(1, { message: 'Please add at least one scan' }),
 });
 
 export type ScanUploadFormData = z.infer<typeof scanUploadSchema>;

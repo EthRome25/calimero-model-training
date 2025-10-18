@@ -66,60 +66,42 @@ steps:
     invitee_id: "{{public_key}}"
     invitation: "{{invitation}}"
 
-  # Step 7: Upload a sample ML model
+  # Step 7: Upload the current ML model using the latest ABI
   # Uses the member public key from the context as the executor
-  - name: Upload Sample ML Model
+  - name: Upload Current ML Model
     type: call
     node: calimero-node-1
     context_id: "{{context_id}}"
     executor_public_key: "{{member_public_key}}"
-    method: upload_model
+    method: upload_current_model
     args:
       name: "Brain Tumor Classifier v1.0"
       description: "A deep learning model for classifying brain tumors from MRI scans"
       model_type: "tumor_classifier"
       version: "1.0.0"
-      file_data: "dGVzdF9tb2RlbF9kYXRh" # Base64 encoded test data
+      file_bytes_base64: "dGVzdF9tb2RlbF9kYXRh" # Base64-encoded binary; Vec<u8> in ABI
       uploader: "Dr. Smith"
+      prediction_accuracy: 0.92
+      date: 1734567890
+      model_params: "{\"backbone\":\"resnet50\",\"epochs\":10}"
       is_public: true
     outputs:
-      model_upload_result: result # Export 'result' as 'model_upload_result'
+      model_id: result # String ID returned by upload_current_model
 
   # Step 8: Wait for the model upload to complete
   - name: Wait for Model Upload
     type: wait
     seconds: 3
 
-  # Step 9: Upload a sample medical scan
-  - name: Upload Sample Medical Scan
-    type: call
-    node: calimero-node-1
-    context_id: "{{context_id}}"
-    executor_public_key: "{{member_public_key}}"
-    method: upload_scan
-    args:
-      patient_id: "PATIENT_001"
-      scan_type: "MRI"
-      body_part: "brain"
-      file_data: "dGVzdF9zY2FuX2RhdGE=" # Base64 encoded test data
-      uploader: "Dr. Johnson"
-    outputs:
-      scan_upload_result: result # Export 'result' as 'scan_upload_result'
-
-  # Step 10: Wait for the scan upload to complete
-  - name: Wait for Scan Upload
-    type: wait
-    seconds: 3
-
-  # Step 11: Get application statistics
-  - name: Get Application Stats
+  # Step 9: Get the current model to verify upload
+  - name: Get Current Model
     type: call
     node: calimero-node-2
     context_id: "{{context_id}}"
     executor_public_key: "{{public_key}}"
-    method: get_stats
+    method: get_current_model
     outputs:
-      stats_result: result # Export 'result' as 'stats_result'
+      current_model: result # Option<Model> returned by get_current_model
 
 
 # Configuration options

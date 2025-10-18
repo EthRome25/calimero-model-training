@@ -62,7 +62,7 @@ impl AppState {
         model_type: String,
         version: String,
         // Raw model bytes; will be stored as Base64 inside ModelFile to keep structure backward-compatible
-        file_bytes: Vec<u8>,
+        file_bytes_base64: String,
         uploader: String,
         // Metadata
         prediction_accuracy: f32,
@@ -72,8 +72,7 @@ impl AppState {
         is_public: bool,
     ) -> app::Result<String> {
         // Convert binary to Base64 to fit current ModelFile definition
-        let file_data = base64::encode(&file_bytes);
-        let file_size = file_bytes.len() as u64;
+        let file_size = file_bytes_base64.len() as u64;
 
         let model_id = format!("model:{}:{}", name, version);
         let created_at = env::time_now();
@@ -84,8 +83,8 @@ impl AppState {
             description,
             model_type,
             version,
+            file_data: file_bytes_base64,
             file_size,
-            file_data,
             uploader,
             created_at,
             is_public,

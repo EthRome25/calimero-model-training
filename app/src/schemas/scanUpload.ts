@@ -1,14 +1,8 @@
 import { z } from 'zod';
 
-// File size limit: 40KB = 40 * 1024 bytes
-const MAX_FILE_SIZE = 40 * 1024;
-
 const scanItemSchema = z.object({
   file: z
     .instanceof(File, { message: 'Please select a file' })
-    .refine((file) => file.size <= MAX_FILE_SIZE, {
-      message: `File size must be less than ${MAX_FILE_SIZE / 1024}KB (${(MAX_FILE_SIZE / 1024).toFixed(1)}KB)`,
-    })
     .refine((file) => {
       const allowedTypes = [
         'image/dicom',

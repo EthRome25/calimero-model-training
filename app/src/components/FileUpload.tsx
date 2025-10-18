@@ -127,7 +127,7 @@ export default function FileUpload({
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle>
-          Upload {uploadType === 'model' ? 'ML Model' : 'Medical Scan'}
+          Upload {uploadType === 'model' ? 'ML Model' : 'Medical Scans'}
         </CardTitle>
       </CardHeader>
       <CardContent>

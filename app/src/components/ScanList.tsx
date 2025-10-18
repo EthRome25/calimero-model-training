@@ -153,7 +153,7 @@ export default function ScanList({
 
               <p className="horizontal-card__description">
                 Medical scan for patient {scan.patient_id}. Uploaded by{' '}
-                {scan.uploader} on {formatDate(scan.created_at)}. This scan
+                {scan.uploader}. This scan
                 contains detailed imaging data for diagnostic analysis and
                 medical research.
               </p>

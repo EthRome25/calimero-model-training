@@ -20,6 +20,8 @@ export const useScanUpload = (api: AbiClient | null) => {
           const fileData = await fileToBase64(scan.file);
           
           const uploadData = {
+            patient_id: 'anonymous', // Default value since endpoint requires it
+            uploader: 'system', // Default value since endpoint requires it
             scan_type: scan.scanType,
             body_part: scan.bodyPart,
             file_data: fileData,
@@ -27,6 +29,8 @@ export const useScanUpload = (api: AbiClient | null) => {
 
           console.log('=== SCAN UPLOAD API CALL ===');
           console.log('Upload parameters:', {
+            patient_id: uploadData.patient_id,
+            uploader: uploadData.uploader,
             scan_type: uploadData.scan_type,
             body_part: uploadData.body_part,
             file_data_length: uploadData.file_data.length,

@@ -82,9 +82,7 @@ export default function HomePage() {
     } catch (error) {
       console.error('getStats error:', error);
       window.alert(
-        error instanceof Error
-          ? error.message
-          : 'Failed to load statistics',
+        error instanceof Error ? error.message : 'Failed to load statistics',
       );
     } finally {
       loadingStatsRef.current = false;
@@ -246,12 +244,26 @@ export default function HomePage() {
                   </CardHeader>
                   <CardContent>
                     <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-                      <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: '#e5e7eb' }}>
+                      <h2
+                        style={{
+                          fontSize: '1.5rem',
+                          marginBottom: '1rem',
+                          color: '#e5e7eb',
+                        }}
+                      >
                         Secure P2P Medical Data Sharing
                       </h2>
-                      <p style={{ color: '#9ca3af', marginBottom: '2rem', lineHeight: '1.6' }}>
-                        Upload and share ML models and MRI tumor scan images securely on the Calimero network.
-                        Your medical data is stored locally and shared peer-to-peer with full privacy protection.
+                      <p
+                        style={{
+                          color: '#9ca3af',
+                          marginBottom: '2rem',
+                          lineHeight: '1.6',
+                        }}
+                      >
+                        Upload and share ML models and MRI tumor scan images
+                        securely on the Calimero network. Your medical data is
+                        stored locally and shared peer-to-peer with full privacy
+                        protection.
                       </p>
                       <Button
                         variant="primary"
@@ -267,28 +279,74 @@ export default function HomePage() {
                     </div>
                   </CardContent>
                 </Card>
-                
+
                 {stats && (
                   <Card variant="rounded" style={{ width: '100%' }}>
                     <CardHeader>
                       <CardTitle>Application Statistics</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-                        <div style={{ textAlign: 'center', padding: '1rem', backgroundColor: '#1f2937', borderRadius: '8px' }}>
-                          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#3b82f6' }}>
+                      <div
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns:
+                            'repeat(auto-fit, minmax(200px, 1fr))',
+                          gap: '1rem',
+                        }}
+                      >
+                        <div
+                          style={{
+                            textAlign: 'center',
+                            padding: '1rem',
+                            backgroundColor: '#1f2937',
+                            borderRadius: '8px',
+                          }}
+                        >
+                          <div
+                            style={{
+                              fontSize: '2rem',
+                              fontWeight: 'bold',
+                              color: '#3b82f6',
+                            }}
+                          >
                             {stats.total_models || 0}
                           </div>
                           <div style={{ color: '#9ca3af' }}>ML Models</div>
                         </div>
-                        <div style={{ textAlign: 'center', padding: '1rem', backgroundColor: '#1f2937', borderRadius: '8px' }}>
-                          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#10b981' }}>
+                        <div
+                          style={{
+                            textAlign: 'center',
+                            padding: '1rem',
+                            backgroundColor: '#1f2937',
+                            borderRadius: '8px',
+                          }}
+                        >
+                          <div
+                            style={{
+                              fontSize: '2rem',
+                              fontWeight: 'bold',
+                              color: '#10b981',
+                            }}
+                          >
                             {stats.total_scans || 0}
                           </div>
                           <div style={{ color: '#9ca3af' }}>Medical Scans</div>
                         </div>
-                        <div style={{ textAlign: 'center', padding: '1rem', backgroundColor: '#1f2937', borderRadius: '8px' }}>
-                          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#f59e0b' }}>
+                        <div
+                          style={{
+                            textAlign: 'center',
+                            padding: '1rem',
+                            backgroundColor: '#1f2937',
+                            borderRadius: '8px',
+                          }}
+                        >
+                          <div
+                            style={{
+                              fontSize: '2rem',
+                              fontWeight: 'bold',
+                              color: '#f59e0b',
+                            }}
+                          >
                             {stats.total_annotations || 0}
                           </div>
                           <div style={{ color: '#9ca3af' }}>Annotations</div>

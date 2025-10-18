@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Button, Input, Card, CardContent, CardHeader, CardTitle } from '@calimero-network/mero-ui';
+import {
+  Button,
+  Input,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@calimero-network/mero-ui';
 
 interface FileUploadProps {
   onUpload: (fileData: {
@@ -18,7 +25,11 @@ interface FileUploadProps {
   isUploading: boolean;
 }
 
-export default function FileUpload({ onUpload, uploadType, isUploading }: FileUploadProps) {
+export default function FileUpload({
+  onUpload,
+  uploadType,
+  isUploading,
+}: FileUploadProps) {
   const [file, setFile] = useState<File | null>(null);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -42,36 +53,56 @@ export default function FileUpload({ onUpload, uploadType, isUploading }: FileUp
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    
+
     if (!file) {
       alert('Please select a file');
       return;
     }
 
     try {
+      console.log('=== FILE UPLOAD DEBUG ===');
+      console.log('Original file:', {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        lastModified: file.lastModified,
+      });
+
       const fileData = await fileToBase64(file);
-      
-      if (uploadType === 'model') {
-        onUpload({
-          name,
-          description,
-          modelType,
-          version,
-          isPublic,
-          fileData,
-          uploader,
-        });
-      } else {
-        onUpload({
-          name,
-          description,
-          patientId,
-          scanType,
-          bodyPart,
-          fileData,
-          uploader,
-        });
-      }
+
+      console.log('Base64 conversion result:', {
+        base64Length: fileData.length,
+        base64Preview: fileData.substring(0, 100) + '...',
+        base64End: '...' + fileData.substring(fileData.length - 100),
+      });
+
+      const uploadData =
+        uploadType === 'model'
+          ? {
+              name,
+              description,
+              modelType,
+              version,
+              isPublic,
+              fileData,
+              uploader,
+            }
+          : {
+              name,
+              description,
+              patientId,
+              scanType,
+              bodyPart,
+              fileData,
+              uploader,
+            };
+
+      console.log('Upload data being sent:', {
+        ...uploadData,
+        fileData: `[Base64 string of length ${fileData.length}]`,
+      });
+
+      onUpload(uploadData);
     } catch (error) {
       console.error('Error converting file to base64:', error);
       alert('Error processing file');
@@ -88,7 +119,7 @@ export default function FileUpload({ onUpload, uploadType, isUploading }: FileUp
         const base64 = result.split(',')[1];
         resolve(base64);
       };
-      reader.onerror = error => reject(error);
+      reader.onerror = (error) => reject(error);
     });
   };
 
@@ -102,26 +133,27 @@ export default function FileUpload({ onUpload, uploadType, isUploading }: FileUp
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">
-              File
-            </label>
+            <label className="block text-sm font-medium mb-2">File</label>
             <Input
               type="file"
               onChange={handleFileChange}
-              accept={uploadType === 'model' ? '.pkl,.joblib,.h5,.pb,.onnx' : '.dcm,.nii,.nii.gz,.jpg,.png,.tiff'}
+              accept={
+                uploadType === 'model'
+                  ? '.pkl,.joblib,.h5,.pb,.onnx'
+                  : '.dcm,.nii,.nii.gz,.jpg,.png,.tiff'
+              }
               required
             />
             {file && (
               <p className="text-sm text-gray-600 mt-1">
-                Selected: {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                Selected: {file.name} ({(file.size / 1024 / 1024).toFixed(2)}{' '}
+                MB)
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">
-              Name
-            </label>
+            <label className="block text-sm font-medium mb-2">Name</label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -145,9 +177,7 @@ export default function FileUpload({ onUpload, uploadType, isUploading }: FileUp
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">
-              Uploader
-            </label>
+            <label className="block text-sm font-medium mb-2">Uploader</label>
             <Input
               value={uploader}
               onChange={(e) => setUploader(e.target.value)}
@@ -162,8 +192,8 @@ export default function FileUpload({ onUpload, uploadType, isUploading }: FileUp
                 <label className="block text-sm font-medium mb-2">
                   Model Type
                 </label>
-                <select 
-                  value={modelType} 
+                <select
+                  value={modelType}
                   onChange={(e) => setModelType(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
@@ -219,8 +249,8 @@ export default function FileUpload({ onUpload, uploadType, isUploading }: FileUp
                 <label className="block text-sm font-medium mb-2">
                   Scan Type
                 </label>
-                <select 
-                  value={scanType} 
+                <select
+                  value={scanType}
                   onChange={(e) => setScanType(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
@@ -237,8 +267,8 @@ export default function FileUpload({ onUpload, uploadType, isUploading }: FileUp
                 <label className="block text-sm font-medium mb-2">
                   Body Part
                 </label>
-                <select 
-                  value={bodyPart} 
+                <select
+                  value={bodyPart}
                   onChange={(e) => setBodyPart(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
@@ -259,7 +289,9 @@ export default function FileUpload({ onUpload, uploadType, isUploading }: FileUp
             disabled={isUploading || !file}
             className="w-full"
           >
-            {isUploading ? 'Uploading...' : `Upload ${uploadType === 'model' ? 'Model' : 'Scan'}`}
+            {isUploading
+              ? 'Uploading...'
+              : `Upload ${uploadType === 'model' ? 'Model' : 'Scan'}`}
           </Button>
         </form>
       </CardContent>

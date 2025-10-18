@@ -1,5 +1,12 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, Button, Badge } from '@calimero-network/mero-ui';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Button,
+  Badge,
+} from '@calimero-network/mero-ui';
 import { ScanFile } from '../api/AbiClient';
 
 interface ScanListProps {
@@ -11,13 +18,13 @@ interface ScanListProps {
   downloadingScanId: string | null;
 }
 
-export default function ScanList({ 
-  scans, 
-  onDownload, 
-  onDelete, 
+export default function ScanList({
+  scans,
+  onDownload,
+  onDelete,
   onAddAnnotation,
-  isDownloading, 
-  downloadingScanId 
+  isDownloading,
+  downloadingScanId,
 }: ScanListProps) {
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
@@ -33,10 +40,10 @@ export default function ScanList({
 
   const getScanTypeColor = (type: string) => {
     const colors: { [key: string]: string } = {
-      'MRI': 'bg-blue-100 text-blue-800',
-      'CT': 'bg-green-100 text-green-800',
-      'PET': 'bg-purple-100 text-purple-800',
-      'Ultrasound': 'bg-yellow-100 text-yellow-800',
+      MRI: 'bg-blue-100 text-blue-800',
+      CT: 'bg-green-100 text-green-800',
+      PET: 'bg-purple-100 text-purple-800',
+      Ultrasound: 'bg-yellow-100 text-yellow-800',
       'X-Ray': 'bg-red-100 text-red-800',
     };
     return colors[type] || 'bg-gray-100 text-gray-800';
@@ -44,12 +51,12 @@ export default function ScanList({
 
   const getBodyPartColor = (part: string) => {
     const colors: { [key: string]: string } = {
-      'brain': 'bg-pink-100 text-pink-800',
-      'chest': 'bg-blue-100 text-blue-800',
-      'abdomen': 'bg-green-100 text-green-800',
-      'spine': 'bg-purple-100 text-purple-800',
-      'pelvis': 'bg-yellow-100 text-yellow-800',
-      'extremities': 'bg-orange-100 text-orange-800',
+      brain: 'bg-pink-100 text-pink-800',
+      chest: 'bg-blue-100 text-blue-800',
+      abdomen: 'bg-green-100 text-green-800',
+      spine: 'bg-purple-100 text-purple-800',
+      pelvis: 'bg-yellow-100 text-yellow-800',
+      extremities: 'bg-orange-100 text-orange-800',
     };
     return colors[part] || 'bg-gray-100 text-gray-800';
   };
@@ -70,7 +77,9 @@ export default function ScanList({
         <Card key={scan.id} className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <div className="flex justify-between items-start">
-              <CardTitle className="text-lg">Scan {scan.id.slice(-8)}</CardTitle>
+              <CardTitle className="text-lg">
+                Scan {scan.id.slice(-8)}
+              </CardTitle>
               <div className="flex gap-1">
                 <Badge className={getScanTypeColor(scan.scan_type)}>
                   {scan.scan_type}
@@ -98,9 +107,7 @@ export default function ScanList({
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Annotations:</span>
-                <Badge variant="outline">
-                  {scan.annotation_count}
-                </Badge>
+                <Badge variant="outline">{scan.annotation_count}</Badge>
               </div>
             </div>
 
@@ -111,7 +118,9 @@ export default function ScanList({
                 size="sm"
                 className="flex-1"
               >
-                {isDownloading && downloadingScanId === scan.id ? 'Downloading...' : 'Download'}
+                {isDownloading && downloadingScanId === scan.id
+                  ? 'Downloading...'
+                  : 'Download'}
               </Button>
               <Button
                 onClick={() => onAddAnnotation(scan.id, 'tumor_detected')}

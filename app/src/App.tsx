@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
-import { CalimeroProvider, AppMode, useCalimero } from '@calimero-network/calimero-client';
+import {
+  CalimeroProvider,
+  AppMode,
+  useCalimero,
+} from '@calimero-network/calimero-client';
 import { ToastProvider } from '@calimero-network/mero-ui';
 
 import HomePage from './pages/home';
@@ -18,7 +22,9 @@ function AppContent() {
     // Set a timeout to prevent infinite loading
     const timeout = setTimeout(() => {
       if (loading) {
-        setError('Connection timeout. The Calimero network may not be accessible.');
+        setError(
+          'Connection timeout. The Calimero network may not be accessible.',
+        );
         setLoading(false);
       }
     }, 10000); // 10 second timeout
@@ -36,7 +42,7 @@ function AppContent() {
           console.log('Fetching contexts...');
           const contexts = await app.fetchContexts();
           console.log('Contexts found:', contexts);
-          
+
           if (contexts.length > 0) {
             const context = contexts[0];
             console.log('Using context:', context);
@@ -46,7 +52,9 @@ function AppContent() {
             clearTimeout(timeout);
           } else {
             console.log('No contexts found');
-            setError('No contexts available. Please ensure the Calimero network is properly set up.');
+            setError(
+              'No contexts available. Please ensure the Calimero network is properly set up.',
+            );
             setLoading(false);
             clearTimeout(timeout);
           }
@@ -63,7 +71,9 @@ function AppContent() {
       // If app is not available after 5 seconds, show error
       setTimeout(() => {
         if (!app) {
-          setError('Calimero client failed to initialize. Please check your network connection.');
+          setError(
+            'Calimero client failed to initialize. Please check your network connection.',
+          );
           setLoading(false);
         }
       }, 5000);
@@ -72,90 +82,108 @@ function AppContent() {
     return () => clearTimeout(timeout);
   }, [app, isAuthenticated, loading]);
 
-
   return (
     <Routes>
       {/* Authentication route */}
-      <Route path="/" element={
-        !isAuthenticated ? <Authenticate /> : <HomePage />
-      } />
-      
+      <Route
+        path="/"
+        element={!isAuthenticated ? <Authenticate /> : <HomePage />}
+      />
+
       {/* Home route */}
       <Route path="/home" element={<HomePage />} />
-      
+
       {/* Dashboard route - only accessible when authenticated and API is ready */}
-      <Route path="/dashboard" element={
-        !isAuthenticated ? (
-          <div className="flex items-center justify-center min-h-screen">
-            <div className="text-center">
-              <h2 className="text-xl font-semibold mb-2">Authentication Required</h2>
-              <p className="text-gray-600 mb-4">Please authenticate first to access the dashboard.</p>
-              <button 
-                onClick={() => window.location.href = '/'} 
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                Go to Login
-              </button>
-            </div>
-          </div>
-        ) : loading ? (
-          <div className="flex items-center justify-center min-h-screen">
-            <div className="text-center">
-              <h2 className="text-xl font-semibold mb-2">Loading Medical AI File Transfer...</h2>
-              <p className="text-gray-600">Connecting to Calimero network</p>
-              <div className="mt-4">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-              </div>
-            </div>
-          </div>
-        ) : error ? (
-          <div className="flex items-center justify-center min-h-screen">
-            <div className="text-center max-w-md">
-              <h2 className="text-xl font-semibold mb-2 text-red-600">Connection Error</h2>
-              <p className="text-gray-600 mb-4">{error}</p>
-              <div className="space-y-2">
-                <p className="text-sm text-gray-500">Troubleshooting steps:</p>
-                <ul className="text-sm text-gray-500 text-left">
-                  <li>1. Ensure Calimero nodes are running</li>
-                  <li>2. Check network connectivity</li>
-                  <li>3. Verify application ID is correct</li>
-                </ul>
-                <button 
-                  onClick={() => window.location.reload()} 
-                  className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+      <Route
+        path="/dashboard"
+        element={
+          !isAuthenticated ? (
+            <div className="flex items-center justify-center min-h-screen">
+              <div className="text-center">
+                <h2 className="text-xl font-semibold mb-2">
+                  Authentication Required
+                </h2>
+                <p className="text-gray-600 mb-4">
+                  Please authenticate first to access the dashboard.
+                </p>
+                <button
+                  onClick={() => (window.location.href = '/')}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >
-                  Retry Connection
+                  Go to Login
                 </button>
               </div>
             </div>
-          </div>
-        ) : api ? (
-          <Dashboard api={api} />
-        ) : (
+          ) : loading ? (
+            <div className="flex items-center justify-center min-h-screen">
+              <div className="text-center">
+                <h2 className="text-xl font-semibold mb-2">
+                  Loading Medical AI File Transfer...
+                </h2>
+                <p className="text-gray-600">Connecting to Calimero network</p>
+                <div className="mt-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                </div>
+              </div>
+            </div>
+          ) : error ? (
+            <div className="flex items-center justify-center min-h-screen">
+              <div className="text-center max-w-md">
+                <h2 className="text-xl font-semibold mb-2 text-red-600">
+                  Connection Error
+                </h2>
+                <p className="text-gray-600 mb-4">{error}</p>
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-500">
+                    Troubleshooting steps:
+                  </p>
+                  <ul className="text-sm text-gray-500 text-left">
+                    <li>1. Ensure Calimero nodes are running</li>
+                    <li>2. Check network connectivity</li>
+                    <li>3. Verify application ID is correct</li>
+                  </ul>
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  >
+                    Retry Connection
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : api ? (
+            <Dashboard api={api} />
+          ) : (
+            <div className="flex items-center justify-center min-h-screen">
+              <div className="text-center">
+                <h2 className="text-xl font-semibold mb-2">Initializing...</h2>
+                <p className="text-gray-600">Setting up the application</p>
+              </div>
+            </div>
+          )
+        }
+      />
+
+      {/* 404 route */}
+      <Route
+        path="*"
+        element={
           <div className="flex items-center justify-center min-h-screen">
             <div className="text-center">
-              <h2 className="text-xl font-semibold mb-2">Initializing...</h2>
-              <p className="text-gray-600">Setting up the application</p>
+              <h2 className="text-xl font-semibold mb-2">Page Not Found</h2>
+              <p className="text-gray-600 mb-4">
+                The requested page could not be found.
+              </p>
+              <button
+                onClick={() => (window.location.href = '/')}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Go Home
+              </button>
             </div>
           </div>
-        )
-      } />
-      
-      {/* 404 route */}
-      <Route path="*" element={
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <h2 className="text-xl font-semibold mb-2">Page Not Found</h2>
-            <p className="text-gray-600 mb-4">The requested page could not be found.</p>
-            <button 
-              onClick={() => window.location.href = '/'} 
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              Go Home
-            </button>
-          </div>
-        </div>
-      } />
+        }
+      />
     </Routes>
   );
 }

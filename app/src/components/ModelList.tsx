@@ -1,5 +1,12 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, Button, Badge } from '@calimero-network/mero-ui';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Button,
+  Badge,
+} from '@calimero-network/mero-ui';
 import { ModelFile } from '../api/AbiClient';
 
 interface ModelListProps {
@@ -10,12 +17,12 @@ interface ModelListProps {
   downloadingModelId: string | null;
 }
 
-export default function ModelList({ 
-  models, 
-  onDownload, 
-  onDelete, 
-  isDownloading, 
-  downloadingModelId 
+export default function ModelList({
+  models,
+  onDownload,
+  onDelete,
+  isDownloading,
+  downloadingModelId,
 }: ModelListProps) {
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
@@ -31,11 +38,11 @@ export default function ModelList({
 
   const getModelTypeColor = (type: string) => {
     const colors: { [key: string]: string } = {
-      'tumor_classifier': 'bg-red-100 text-red-800',
-      'segmentation': 'bg-blue-100 text-blue-800',
-      'detection': 'bg-green-100 text-green-800',
-      'regression': 'bg-purple-100 text-purple-800',
-      'classification': 'bg-yellow-100 text-yellow-800',
+      tumor_classifier: 'bg-red-100 text-red-800',
+      segmentation: 'bg-blue-100 text-blue-800',
+      detection: 'bg-green-100 text-green-800',
+      regression: 'bg-purple-100 text-purple-800',
+      classification: 'bg-yellow-100 text-yellow-800',
     };
     return colors[type] || 'bg-gray-100 text-gray-800';
   };
@@ -65,7 +72,7 @@ export default function ModelList({
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-700 mb-3">{model.description}</p>
-            
+
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-500">Size:</span>
@@ -94,7 +101,9 @@ export default function ModelList({
                 size="sm"
                 className="flex-1"
               >
-                {isDownloading && downloadingModelId === model.id ? 'Downloading...' : 'Download'}
+                {isDownloading && downloadingModelId === model.id
+                  ? 'Downloading...'
+                  : 'Download'}
               </Button>
               <Button
                 onClick={() => onDelete(model.id)}

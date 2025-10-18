@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, Button, Badge } from '@calimero-network/mero-ui';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Button,
+  Badge,
+} from '@calimero-network/mero-ui';
 import { AbiClient, ModelFile, ScanFile } from '../api/AbiClient';
 import FileUpload from './FileUpload';
 import ModelList from './ModelList';
@@ -15,9 +22,26 @@ export default function Dashboard({ api }: DashboardProps) {
   const [scans, setScans] = useState<ScanFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
-  const [downloadingModelId, setDownloadingModelId] = useState<string | null>(null);
-  const [downloadingScanId, setDownloadingScanId] = useState<string | null>(null);
+  const [downloadingModelId, setDownloadingModelId] = useState<string | null>(
+    null,
+  );
+  const [downloadingScanId, setDownloadingScanId] = useState<string | null>(
+    null,
+  );
   const [stats, setStats] = useState<string>('');
+
+  // Helper function to convert base64 string to binary blob
+  const base64ToBlob = (
+    base64String: string,
+    mimeType: string = 'application/octet-stream',
+  ): Blob => {
+    const binaryString = atob(base64String);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return new Blob([bytes], { type: mimeType });
+  };
 
   const loadModels = async () => {
     try {
@@ -33,8 +57,8 @@ export default function Dashboard({ api }: DashboardProps) {
       // For demo purposes, we'll load all scans
       // In a real app, you might want to filter by patient or user
       const allMetadata = await api.getAllMetadata();
-      const scanMetadata = allMetadata.filter(m => m.file_type === 'scan');
-      
+      const scanMetadata = allMetadata.filter((m) => m.file_type === 'scan');
+
       const scanPromises = scanMetadata.map(async (metadata) => {
         try {
           const scan = await api.getScan({ scan_id: metadata.file_id });
@@ -44,9 +68,11 @@ export default function Dashboard({ api }: DashboardProps) {
           return null;
         }
       });
-      
+
       const scanResults = await Promise.all(scanPromises);
-      const validScans = scanResults.filter((scan): scan is ScanFile => scan !== null);
+      const validScans = scanResults.filter(
+        (scan): scan is ScanFile => scan !== null,
+      );
       setScans(validScans);
     } catch (error) {
       console.error('Error loading scans:', error);
@@ -71,15 +97,28 @@ export default function Dashboard({ api }: DashboardProps) {
   const handleModelUpload = async (fileData: any) => {
     setIsUploading(true);
     try {
-      await api.uploadModel({
+      console.log('=== MODEL UPLOAD API CALL ===');
+      console.log('Upload parameters:', {
+        name: fileData.name,
+        description: fileData.description,
+        model_type: fileData.modelType,
+        version: fileData.version,
+        file_data_length: fileData.fileData?.length || 0,
+        uploader: fileData.uploader,
+        is_public: fileData.isPublic,
+      });
+
+      const result = await api.uploadModel({
         name: fileData.name,
         description: fileData.description,
         model_type: fileData.modelType,
         version: fileData.version,
         file_data: fileData.fileData,
         uploader: fileData.uploader,
-        is_public: fileData.isPublic
+        is_public: fileData.isPublic,
       });
+
+      console.log('Model upload result:', result);
       await loadModels();
       await loadStats();
     } catch (error) {
@@ -93,13 +132,24 @@ export default function Dashboard({ api }: DashboardProps) {
   const handleScanUpload = async (fileData: any) => {
     setIsUploading(true);
     try {
-      await api.uploadScan({
+      console.log('=== SCAN UPLOAD API CALL ===');
+      console.log('Upload parameters:', {
+        patient_id: fileData.patientId,
+        scan_type: fileData.scanType,
+        body_part: fileData.bodyPart,
+        file_data_length: fileData.fileData?.length || 0,
+        uploader: fileData.uploader,
+      });
+
+      const result = await api.uploadScan({
         patient_id: fileData.patientId,
         scan_type: fileData.scanType,
         body_part: fileData.bodyPart,
         file_data: fileData.fileData,
-        uploader: fileData.uploader
+        uploader: fileData.uploader,
       });
+
+      console.log('Scan upload result:', result);
       await loadScans();
       await loadStats();
     } catch (error) {
@@ -114,10 +164,32 @@ export default function Dashboard({ api }: DashboardProps) {
     setIsDownloading(true);
     setDownloadingModelId(modelId);
     try {
-      const model = await api.downloadModel({ model_id: modelId, downloader: 'current_user' });
-      
-      // Create download link
-      const blob = new Blob([model.file_data], { type: 'application/octet-stream' });
+      console.log('=== MODEL DOWNLOAD DEBUG ===');
+      console.log('Downloading model ID:', modelId);
+
+      const model = await api.downloadModel({
+        model_id: modelId,
+        downloader: 'current_user',
+      });
+
+      console.log('Downloaded model data:', {
+        id: model.id,
+        name: model.name,
+        file_size: model.file_size,
+        file_data_type: typeof model.file_data,
+        file_data_length: model.file_data?.length || 0,
+        file_data_preview: model.file_data?.substring(0, 100) + '...',
+        file_data_end:
+          '...' + model.file_data?.substring(model.file_data.length - 100),
+      });
+
+      // Convert base64 string back to binary data and create download link
+      const blob = base64ToBlob(model.file_data);
+      console.log('Created blob:', {
+        size: blob.size,
+        type: blob.type,
+      });
+
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -126,7 +198,8 @@ export default function Dashboard({ api }: DashboardProps) {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      
+
+      console.log('Model download completed');
       await loadStats();
     } catch (error) {
       console.error('Error downloading model:', error);
@@ -141,10 +214,33 @@ export default function Dashboard({ api }: DashboardProps) {
     setIsDownloading(true);
     setDownloadingScanId(scanId);
     try {
-      const scan = await api.downloadScan({ scan_id: scanId, downloader: 'current_user' });
-      
-      // Create download link
-      const blob = new Blob([scan.file_data], { type: 'application/octet-stream' });
+      console.log('=== SCAN DOWNLOAD DEBUG ===');
+      console.log('Downloading scan ID:', scanId);
+
+      const scan = await api.downloadScan({
+        scan_id: scanId,
+        downloader: 'current_user',
+      });
+
+      console.log('Downloaded scan data:', {
+        id: scan.id,
+        patient_id: scan.patient_id,
+        scan_type: scan.scan_type,
+        file_size: scan.file_size,
+        file_data_type: typeof scan.file_data,
+        file_data_length: scan.file_data?.length || 0,
+        file_data_preview: scan.file_data?.substring(0, 100) + '...',
+        file_data_end:
+          '...' + scan.file_data?.substring(scan.file_data.length - 100),
+      });
+
+      // Convert base64 string back to binary data and create download link
+      const blob = base64ToBlob(scan.file_data);
+      console.log('Created blob:', {
+        size: blob.size,
+        type: blob.type,
+      });
+
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -153,7 +249,8 @@ export default function Dashboard({ api }: DashboardProps) {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      
+
+      console.log('Scan download completed');
       await loadStats();
     } catch (error) {
       console.error('Error downloading scan:', error);

@@ -25,43 +25,59 @@ export interface ModelSummary {
   batchSize: number;
 }
 
-// Mock data for model summary
-// @ts-ignore
-const mockModelSummary: Model = {
-  id: 'model-123',
-  name: 'Medical Image Classifier v1',
-  version: '1.0.0',
-  status: 'completed',
-  accuracy: 72.5,
-  precision: 92.3,
-  recall: 0.912,
-  f1Score: 0.917,
-  trainingProgress: 100,
-  epochsCompleted: 50,
-  totalEpochs: 50,
-  loss: 0.0234,
-  validationLoss: 0.0456,
-  trainingTime: '2h 34m',
-  lastUpdated: '2025-10-18T14:30:00Z',
-  datasetSize: 10000,
-  modelSize: '234MB',
-  architecture: 'ResNet-50',
-  optimizer: 'Adam',
-  learningRate: 0.001,
-  batchSize: 32,
-};
+// Mock data for model summary - removed as we now use real API data
 
 export function useModelSummary(api: AbiClient | null) {
   return useQuery({
     queryKey: ['modelSummary'],
-    queryFn: async (): Promise<Model> => {
+    queryFn: async (): Promise<ModelSummary> => {
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       if (!api) throw new Error('API not available');
 
-      // return api.getCurrentModel();
-      return mockModelSummary;
+      const model = await api.getCurrentModel();
+      
+      // Map API Model to ModelSummary
+      return {
+        id: model.id,
+        name: model.name,
+        version: model.version,
+        status: 'completed' as const,
+        accuracy: model.prediction_accuracy || 0,
+        precision: 92.3, // Mock data - not available in API
+        recall: 91.2, // Mock data - not available in API
+        f1Score: 91.7, // Mock data - not available in API
+        trainingProgress: 100, // Mock data - not available in API
+        epochsCompleted: 50, // Mock data - not available in API
+        totalEpochs: 50, // Mock data - not available in API
+        loss: 0.0234, // Mock data - not available in API
+        validationLoss: 0.0456, // Mock data - not available in API
+        trainingTime: '2h 34m', // Mock data - not available in API
+        lastUpdated: new Date(model.created_at / 1000000).toISOString(), // Convert from nanoseconds
+        datasetSize: 10000, // Mock data - not available in API
+        modelSize: `${Math.round(model.file_size / 1024 / 1024)}MB`, // Convert bytes to MB
+        architecture: 'ResNet-50', // Mock data - not available in API
+        optimizer: 'Adam', // Mock data - not available in API
+        learningRate: 0.001, // Mock data - not available in API
+        batchSize: 32, // Mock data - not available in API
+      };
+    },
+    enabled: !!api,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+}
+
+// Hook for getting current model name for alert
+export function useCurrentModelName(api: AbiClient | null) {
+  return useQuery({
+    queryKey: ['currentModelName'],
+    queryFn: async (): Promise<string> => {
+      if (!api) throw new Error('API not available');
+      
+      const model = await api.getCurrentModel();
+      return model.name;
     },
     enabled: !!api,
     staleTime: 5 * 60 * 1000, // 5 minutes

@@ -155,6 +155,51 @@ export class CnnApiClient {
       throw new Error(`Model retraining failed: ${error}`);
     }
   }
+
+  /**
+   * Retrain the CNN model with uploaded ZIP file containing training data
+   */
+  async retrainWithFile(file: File): Promise<CnnRetrainResponse> {
+    try {
+      console.log('Starting retrain request with file:', file.name, 'Size:', file.size);
+      console.log('Using base URL:', this.baseURL);
+      console.log('Full endpoint URL:', `${this.baseURL}${CNN_ENDPOINTS.RETRAIN}`);
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response: AxiosResponse<CnnRetrainResponse> = await axios.post(
+        `${this.baseURL}${CNN_ENDPOINTS.RETRAIN}`,
+        formData,
+        {
+          timeout: 1800000, // 30 minute timeout for training
+          maxRedirects: 5,
+        }
+      );
+
+      console.log('Retrain request completed successfully');
+      console.log('Response status:', response.status);
+      console.log('Response data:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Retrain request failed:', error);
+      if (axios.isAxiosError(error)) {
+        console.error('Error response status:', error.response?.status);
+        console.error('Error response data:', error.response?.data);
+        console.error('Error response headers:', error.response?.headers);
+        
+        if (error.response?.status === 400) {
+          throw new Error('Invalid ZIP file. Please ensure the file contains valid training data.');
+        } else if (error.response?.status === 500) {
+          throw new Error('Model retraining failed. Please try again or contact support.');
+        } else if (error.code === 'ECONNABORTED') {
+          throw new Error('Training request timed out after 30 minutes. Training may still be in progress on the server.');
+        } else if (error.code === 'ECONNREFUSED') {
+          throw new Error('CNN API is not available. Please check if the service is running.');
+        }
+      }
+      throw new Error(`Model retraining failed: ${error}`);
+    }
+  }
 }
 
 // Export a default instance

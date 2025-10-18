@@ -1,5 +1,6 @@
 import React from 'react';
-import { useModelSummary, ModelSummary } from '../../hooks/useModelSummary';
+import { useQueryClient } from '@tanstack/react-query';
+import { useModelSummary, useCurrentModelName } from '../../hooks/useModelSummary';
 import { AbiClient } from '../../api/AbiClient';
 import Layout from '../../components/Layout';
 
@@ -8,9 +9,30 @@ interface ModelSummaryPageProps {
 }
 
 function ModelSummaryContent({ api }: ModelSummaryPageProps) {
+  const queryClient = useQueryClient();
   const { data: modelSummary, isLoading, error, refetch } = useModelSummary(api);
+  const { refetch: refetchModelName } = useCurrentModelName(api);
 
   console.log('Model Summary Data:', modelSummary);
+
+  const handleShowModelName = async () => {
+    try {
+      // Clear cache first to force fresh data
+      queryClient.invalidateQueries({ queryKey: ['currentModelName'] });
+      queryClient.invalidateQueries({ queryKey: ['modelSummary'] });
+      
+      // Force refresh by invalidating cache first
+      const modelName = await refetchModelName();
+      if (modelName.data) {
+        alert(`Obecny model: ${modelName.data}`);
+      } else {
+        alert('Nie udało się pobrać nazwy modelu');
+      }
+    } catch (error) {
+      console.error('Error fetching model name:', error);
+      alert('Błąd podczas pobierania nazwy modelu');
+    }
+  };
 
   if (isLoading) {
     return (
@@ -69,6 +91,13 @@ function ModelSummaryContent({ api }: ModelSummaryPageProps) {
               onClick={() => refetch()}
             >
               Refresh Data
+            </button>
+            <button
+              className="button button-primary"
+              onClick={handleShowModelName}
+              style={{ marginLeft: 'var(--spacing-m)' }}
+            >
+              Show Current Model
             </button>
           </div>
         </div>

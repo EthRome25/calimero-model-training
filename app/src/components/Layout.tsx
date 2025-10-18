@@ -7,6 +7,7 @@ import {
   Text,
   useToast,
   NavbarMenu,
+  Badge,
 } from '@calimero-network/mero-ui';
 import translations from '../constants/en.global.json';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -16,6 +17,7 @@ import {
   useCalimero,
 } from '@calimero-network/calimero-client';
 import { AbiClient } from '../api/AbiClient';
+import { CALIMERO_NODE_URL } from '../constants/api';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -45,7 +47,7 @@ export default function Layout({ children, api }: LayoutProps) {
             setCurrentContext({
               applicationId: context.applicationId,
               contextId: context.contextId,
-              nodeUrl: appUrl || 'http://node1.127.0.0.1.nip.io', // Fallback to hardcoded URL
+              nodeUrl: appUrl || CALIMERO_NODE_URL, // Fallback to environment variable
             });
           }
         } catch (error) {
@@ -78,6 +80,8 @@ export default function Layout({ children, api }: LayoutProps) {
     if (path === '/scans') return 'scans';
     if (path === '/upload-model') return 'upload-model';
     if (path === '/upload-scan') return 'upload-scan';
+    if (path === '/predicting') return 'predicting';
+    if (path === '/zip-predicting') return 'zip-predicting';
     if (path === '/model-summary') return 'model-summary';
     return 'home';
   };
@@ -198,7 +202,7 @@ export default function Layout({ children, api }: LayoutProps) {
                 <CalimeroConnectButton
                   connectionType={{
                     type: ConnectionType.Custom,
-                    url: 'http://node1.127.0.0.1.nip.io',
+                    url: CALIMERO_NODE_URL,
                   }}
                 />
               </div>
@@ -293,8 +297,21 @@ export default function Layout({ children, api }: LayoutProps) {
               <button
                 onClick={() => navigate('/upload-scan')}
                 className={`button ${currentRoute === 'upload-scan' ? 'button-primary' : 'button-secondary'}`}
+                disabled
               >
                 Upload Scan
+              </button>
+              <button
+                onClick={() => navigate('/predicting')}
+                className={`button ${currentRoute === 'predicting' ? 'button-primary' : 'button-secondary'}`}
+              >
+                AI Prediction
+              </button>
+              <button
+                onClick={() => navigate('/zip-predicting')}
+                className={`button ${currentRoute === 'zip-predicting' ? 'button-primary' : 'button-secondary'}`}
+              >
+                Model Retraining
               </button>
               <button
                 onClick={() => navigate('/model-summary')}

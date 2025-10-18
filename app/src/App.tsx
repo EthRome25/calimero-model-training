@@ -14,6 +14,8 @@ import ModelsPage from './pages/models';
 import ScansPage from './pages/scans';
 import UploadModelPage from './pages/upload-model';
 import UploadScanPage from './pages/upload-scan';
+import PredictingPage from './pages/predicting';
+import ZipPredictingPage from './pages/zip-predicting';
 import ModelSummaryPage from './pages/model-summary';
 import { AbiClient } from './api/AbiClient';
 
@@ -49,8 +51,22 @@ function AppContent() {
           console.log('Contexts found:', contexts);
 
           if (contexts.length > 0) {
-            const context = contexts[0];
-            console.log('Using context:', context);
+            // Try to find the specific context from environment variables
+            const targetContextId = import.meta.env.VITE_CONTEXT_ID;
+            let context = contexts[0]; // fallback to first context
+            
+            if (targetContextId) {
+              const foundContext = contexts.find(ctx => ctx.contextId === targetContextId);
+              if (foundContext) {
+                context = foundContext;
+                console.log('Using specific context from env:', context);
+              } else {
+                console.log('Target context not found, using first available:', context);
+              }
+            } else {
+              console.log('Using first available context:', context);
+            }
+            
             const abiClient = new AbiClient(app, context);
             setApi(abiClient);
             setLoading(false);
@@ -226,6 +242,26 @@ function AppContent() {
         }
       />
 
+      {/* Predicting route */}
+      <Route
+        path="/predicting"
+        element={
+          <ProtectedRoute>
+            <PredictingPage api={api!} />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* ZIP Predicting route */}
+      <Route
+        path="/zip-predicting"
+        element={
+          <ProtectedRoute>
+            <ZipPredictingPage api={api!} />
+          </ProtectedRoute>
+        }
+      />
+
       {/* Model Summary route */}
       <Route
         path="/model-summary"
@@ -293,7 +329,7 @@ const queryClient = new QueryClient({
 
 export default function App() {
   const [clientAppId] = useState<string>(
-    'HELDXwknx9tVnj3JKfa3EMyGB9JEsApeijVHzKn5cRVX', // Application ID from bootstrap
+    import.meta.env.VITE_APPLICATION_ID || 'Fm81EMsg45cuf6hRfERBvK1HaJaUC3k5cuw6dHofWz3r', // Application ID from environment or fallback
   );
 
   return (

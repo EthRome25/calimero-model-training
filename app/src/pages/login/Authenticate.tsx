@@ -12,6 +12,7 @@ import {
   ConnectionType,
 } from '@calimero-network/calimero-client';
 import translations from '../../constants/en.global.json';
+import { CALIMERO_NODE_URL } from '../../constants/api';
 
 export default function Authenticate() {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ export default function Authenticate() {
             <CalimeroConnectButton
               connectionType={{
                 type: ConnectionType.Custom,
-                url: 'http://node1.127.0.0.1.nip.io',
+                url: CALIMERO_NODE_URL,
               }}
             />
           </NavbarItem>
@@ -103,7 +104,7 @@ export default function Authenticate() {
                   <CalimeroConnectButton
                     connectionType={{
                       type: ConnectionType.Custom,
-                      url: 'http://node1.127.0.0.1.nip.io',
+                      url: CALIMERO_NODE_URL,
                     }}
                   />
                 </div>

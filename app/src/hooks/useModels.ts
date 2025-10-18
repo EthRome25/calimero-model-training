@@ -1,6 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AbiClient, ModelFile } from '../api/AbiClient';
-import { isRateLimitError, createRateLimitError, getRetryDelay } from '../utils/errorHandling';
+import {
+  isRateLimitError,
+  createRateLimitError,
+  getRetryDelay,
+} from '../utils/errorHandling';
 
 export const useModels = (api: AbiClient | null) => {
   return useQuery({
@@ -9,16 +13,24 @@ export const useModels = (api: AbiClient | null) => {
       if (!api) throw new Error('API not available');
       try {
         const models = await api.getPublicModels();
-        
+
         // Sort models by created_at timestamp (latest first)
         return models.sort((a, b) => {
-          const timestampA = typeof a.created_at === 'string' ? parseFloat(a.created_at) : a.created_at || 0;
-          const timestampB = typeof b.created_at === 'string' ? parseFloat(b.created_at) : b.created_at || 0;
+          const timestampA =
+            typeof a.created_at === 'string'
+              ? parseFloat(a.created_at)
+              : a.created_at || 0;
+          const timestampB =
+            typeof b.created_at === 'string'
+              ? parseFloat(b.created_at)
+              : b.created_at || 0;
           return timestampB - timestampA; // Descending order (latest first)
         });
       } catch (error) {
         if (isRateLimitError(error)) {
-          throw createRateLimitError('Rate limit exceeded while fetching models');
+          throw createRateLimitError(
+            'Rate limit exceeded while fetching models',
+          );
         }
         throw error;
       }
@@ -37,15 +49,23 @@ export const useModels = (api: AbiClient | null) => {
 
 export const useDownloadModel = (api: AbiClient | null) => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async ({ modelId, downloader }: { modelId: string; downloader: string }) => {
+    mutationFn: async ({
+      modelId,
+      downloader,
+    }: {
+      modelId: string;
+      downloader: string;
+    }) => {
       if (!api) throw new Error('API not available');
       try {
         return await api.downloadModel({ model_id: modelId, downloader });
       } catch (error) {
         if (isRateLimitError(error)) {
-          throw createRateLimitError('Rate limit exceeded while downloading model');
+          throw createRateLimitError(
+            'Rate limit exceeded while downloading model',
+          );
         }
         throw error;
       }
@@ -66,7 +86,7 @@ export const useDownloadModel = (api: AbiClient | null) => {
 
 export const useDeleteModel = (api: AbiClient | null) => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async ({ modelId }: { modelId: string }) => {
       if (!api) throw new Error('API not available');
@@ -74,7 +94,9 @@ export const useDeleteModel = (api: AbiClient | null) => {
         return await api.deleteFile({ file_id: modelId, file_type: 'model' });
       } catch (error) {
         if (isRateLimitError(error)) {
-          throw createRateLimitError('Rate limit exceeded while deleting model');
+          throw createRateLimitError(
+            'Rate limit exceeded while deleting model',
+          );
         }
         throw error;
       }

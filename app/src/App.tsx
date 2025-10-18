@@ -134,9 +134,7 @@ function AppContent() {
             </h2>
             <p className="text-gray-600 mb-4">{error}</p>
             <div className="space-y-2">
-              <p className="text-sm text-gray-500">
-                Troubleshooting steps:
-              </p>
+              <p className="text-sm text-gray-500">Troubleshooting steps:</p>
               <ul className="text-sm text-gray-500 text-left">
                 <li>1. Ensure Calimero nodes are running</li>
                 <li>2. Check network connectivity</li>
@@ -178,53 +176,53 @@ function AppContent() {
       />
 
       {/* Home route */}
-      <Route 
-        path="/home" 
+      <Route
+        path="/home"
         element={
           <ProtectedRoute>
             <HomePage api={api!} />
           </ProtectedRoute>
-        } 
+        }
       />
 
       {/* Models route */}
-      <Route 
-        path="/models" 
+      <Route
+        path="/models"
         element={
           <ProtectedRoute>
             <ModelsPage api={api!} />
           </ProtectedRoute>
-        } 
+        }
       />
 
       {/* Scans route */}
-      <Route 
-        path="/scans" 
+      <Route
+        path="/scans"
         element={
           <ProtectedRoute>
             <ScansPage api={api!} />
           </ProtectedRoute>
-        } 
+        }
       />
 
       {/* Upload Model route */}
-      <Route 
-        path="/upload-model" 
+      <Route
+        path="/upload-model"
         element={
           <ProtectedRoute>
             <UploadModelPage api={api!} />
           </ProtectedRoute>
-        } 
+        }
       />
 
       {/* Upload Scan route */}
-      <Route 
-        path="/upload-scan" 
+      <Route
+        path="/upload-scan"
         element={
           <ProtectedRoute>
             <UploadScanPage api={api!} />
           </ProtectedRoute>
-        } 
+        }
       />
 
       {/* 404 route */}

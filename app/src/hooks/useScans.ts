@@ -1,13 +1,17 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AbiClient, ScanFile } from '../api/AbiClient';
-import { isRateLimitError, createRateLimitError, getRetryDelay } from '../utils/errorHandling';
+import {
+  isRateLimitError,
+  createRateLimitError,
+  getRetryDelay,
+} from '../utils/errorHandling';
 
 export const useScans = (api: AbiClient | null) => {
   return useQuery({
     queryKey: ['scans'],
     queryFn: async () => {
       if (!api) throw new Error('API not available');
-      
+
       try {
         // Get all metadata and filter for scans
         const allMetadata = await api.getAllMetadata();
@@ -20,7 +24,9 @@ export const useScans = (api: AbiClient | null) => {
             return scan;
           } catch (error) {
             if (isRateLimitError(error)) {
-              console.warn(`Rate limit exceeded for scan ${metadata.file_id}, skipping`);
+              console.warn(
+                `Rate limit exceeded for scan ${metadata.file_id}, skipping`,
+              );
               return null;
             }
             console.error(`Error loading scan ${metadata.file_id}:`, error);
@@ -29,17 +35,27 @@ export const useScans = (api: AbiClient | null) => {
         });
 
         const scanResults = await Promise.all(scanPromises);
-        const validScans = scanResults.filter((scan): scan is ScanFile => scan !== null);
-        
+        const validScans = scanResults.filter(
+          (scan): scan is ScanFile => scan !== null,
+        );
+
         // Sort scans by created_at timestamp (latest first)
         return validScans.sort((a, b) => {
-          const timestampA = typeof a.created_at === 'string' ? parseFloat(a.created_at) : a.created_at || 0;
-          const timestampB = typeof b.created_at === 'string' ? parseFloat(b.created_at) : b.created_at || 0;
+          const timestampA =
+            typeof a.created_at === 'string'
+              ? parseFloat(a.created_at)
+              : a.created_at || 0;
+          const timestampB =
+            typeof b.created_at === 'string'
+              ? parseFloat(b.created_at)
+              : b.created_at || 0;
           return timestampB - timestampA; // Descending order (latest first)
         });
       } catch (error) {
         if (isRateLimitError(error)) {
-          throw createRateLimitError('Rate limit exceeded while fetching scans');
+          throw createRateLimitError(
+            'Rate limit exceeded while fetching scans',
+          );
         }
         throw error;
       }
@@ -58,15 +74,23 @@ export const useScans = (api: AbiClient | null) => {
 
 export const useDownloadScan = (api: AbiClient | null) => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async ({ scanId, downloader }: { scanId: string; downloader: string }) => {
+    mutationFn: async ({
+      scanId,
+      downloader,
+    }: {
+      scanId: string;
+      downloader: string;
+    }) => {
       if (!api) throw new Error('API not available');
       try {
         return await api.downloadScan({ scan_id: scanId, downloader });
       } catch (error) {
         if (isRateLimitError(error)) {
-          throw createRateLimitError('Rate limit exceeded while downloading scan');
+          throw createRateLimitError(
+            'Rate limit exceeded while downloading scan',
+          );
         }
         throw error;
       }
@@ -87,7 +111,7 @@ export const useDownloadScan = (api: AbiClient | null) => {
 
 export const useDeleteScan = (api: AbiClient | null) => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async ({ scanId }: { scanId: string }) => {
       if (!api) throw new Error('API not available');
@@ -116,15 +140,23 @@ export const useDeleteScan = (api: AbiClient | null) => {
 
 export const useAddAnnotation = (api: AbiClient | null) => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async ({ scanId, label }: { scanId: string; label: string }) => {
+    mutationFn: async ({
+      scanId,
+      label,
+    }: {
+      scanId: string;
+      label: string;
+    }) => {
       if (!api) throw new Error('API not available');
       try {
         return await api.addAnnotation({ scan_id: scanId, _label: label });
       } catch (error) {
         if (isRateLimitError(error)) {
-          throw createRateLimitError('Rate limit exceeded while adding annotation');
+          throw createRateLimitError(
+            'Rate limit exceeded while adding annotation',
+          );
         }
         throw error;
       }

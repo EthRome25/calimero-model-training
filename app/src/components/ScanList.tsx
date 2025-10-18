@@ -24,17 +24,19 @@ export default function ScanList({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const formatDate = (timestamp: number | string | undefined | null): string | React.JSX.Element => {
+  const formatDate = (
+    timestamp: number | string | undefined | null,
+  ): string | React.JSX.Element => {
     try {
       // Handle null/undefined
       if (timestamp === null || timestamp === undefined) {
         return 'No Date';
       }
-      
+
       // Handle different timestamp formats
       let date: Date;
       let numericTimestamp: number;
-      
+
       // Convert to number if it's a string
       if (typeof timestamp === 'string') {
         // Try to parse as a number first
@@ -48,7 +50,11 @@ export default function ScanList({
             return (
               <div>
                 <div>{dateStr}</div>
-                <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>{timeStr}</div>
+                <div
+                  style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}
+                >
+                  {timeStr}
+                </div>
               </div>
             );
           } else {
@@ -58,11 +64,11 @@ export default function ScanList({
       } else {
         numericTimestamp = timestamp;
       }
-      
+
       if (!numericTimestamp || numericTimestamp === 0) {
         return 'No Date';
       }
-      
+
       if (numericTimestamp < 10000000000) {
         // Unix timestamp in seconds, convert to milliseconds
         date = new Date(numericTimestamp * 1000);
@@ -73,18 +79,20 @@ export default function ScanList({
         // Unix timestamp in milliseconds
         date = new Date(numericTimestamp);
       }
-      
+
       // Check if date is valid
       if (isNaN(date.getTime())) {
         return 'Invalid Date';
       }
-      
+
       const dateStr = date.toLocaleDateString();
       const timeStr = date.toLocaleTimeString();
       return (
         <div>
           <div>{dateStr}</div>
-          <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>{timeStr}</div>
+          <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+            {timeStr}
+          </div>
         </div>
       );
     } catch (error) {
@@ -122,7 +130,8 @@ export default function ScanList({
         <div className="empty-state__icon">🏥</div>
         <h3 className="empty-state__title">No Medical Scans Available</h3>
         <p className="empty-state__description">
-          Upload your first medical scan to get started with secure, peer-to-peer medical data sharing.
+          Upload your first medical scan to get started with secure,
+          peer-to-peer medical data sharing.
         </p>
       </div>
     );
@@ -136,17 +145,19 @@ export default function ScanList({
             <div className="horizontal-card__icon">
               {getScanTypeIcon(scan.scan_type)}
             </div>
-            
+
             <div className="horizontal-card__main">
               <h3 className="horizontal-card__title">
                 {scan.scan_type} Scan - {scan.body_part}
               </h3>
-              
+
               <p className="horizontal-card__description">
-                Medical scan for patient {scan.patient_id}. Uploaded by {scan.uploader} on {formatDate(scan.created_at)}.
-                This scan contains detailed imaging data for diagnostic analysis and medical research.
+                Medical scan for patient {scan.patient_id}. Uploaded by{' '}
+                {scan.uploader} on {formatDate(scan.created_at)}. This scan
+                contains detailed imaging data for diagnostic analysis and
+                medical research.
               </p>
-              
+
               <div className="horizontal-card__meta">
                 <span className="horizontal-card__badge horizontal-card__badge--primary">
                   {scan.scan_type}
@@ -158,7 +169,7 @@ export default function ScanList({
                   {formatFileSize(scan.file_size)}
                 </span>
               </div>
-              
+
               <div className="horizontal-card__actions">
                 <button
                   className="button button-primary"
@@ -172,9 +183,9 @@ export default function ScanList({
                 <button
                   className="button button-secondary"
                   onClick={() => onDelete(scan.id)}
-                  style={{ 
+                  style={{
                     color: '#ef4444',
-                    borderColor: '#ef4444'
+                    borderColor: '#ef4444',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = '#ef4444';
@@ -189,7 +200,7 @@ export default function ScanList({
                 </button>
               </div>
             </div>
-            
+
             <div className="horizontal-card__stats">
               <div className="horizontal-card__stat">
                 <div className="horizontal-card__stat-value">

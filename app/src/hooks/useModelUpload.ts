@@ -1,19 +1,23 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AbiClient } from '../api/AbiClient';
 import { ModelUploadFormData } from '../schemas/modelUpload';
-import { isRateLimitError, createRateLimitError, getRetryDelay } from '../utils/errorHandling';
+import {
+  isRateLimitError,
+  createRateLimitError,
+  getRetryDelay,
+} from '../utils/errorHandling';
 
 export const useModelUpload = (api: AbiClient | null) => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (formData: ModelUploadFormData) => {
       if (!api) throw new Error('API not available');
-      
+
       try {
         // Convert file to base64
         const fileData = await fileToBase64(formData.file);
-        
+
         const uploadData = {
           name: formData.name,
           description: formData.description,
@@ -37,11 +41,13 @@ export const useModelUpload = (api: AbiClient | null) => {
 
         const result = await api.uploadModel(uploadData);
         console.log('Model upload result:', result);
-        
+
         return result;
       } catch (error) {
         if (isRateLimitError(error)) {
-          throw createRateLimitError('Rate limit exceeded while uploading model');
+          throw createRateLimitError(
+            'Rate limit exceeded while uploading model',
+          );
         }
         throw error;
       }

@@ -1,19 +1,23 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AbiClient } from '../api/AbiClient';
 import { ScanUploadFormData } from '../schemas/scanUpload';
-import { isRateLimitError, createRateLimitError, getRetryDelay } from '../utils/errorHandling';
+import {
+  isRateLimitError,
+  createRateLimitError,
+  getRetryDelay,
+} from '../utils/errorHandling';
 
 export const useScanUpload = (api: AbiClient | null) => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (formData: ScanUploadFormData) => {
       if (!api) throw new Error('API not available');
-      
+
       try {
         // Convert file to base64
         const fileData = await fileToBase64(formData.file);
-        
+
         const uploadData = {
           patient_id: formData.patientId,
           scan_type: formData.scanType,
@@ -33,11 +37,13 @@ export const useScanUpload = (api: AbiClient | null) => {
 
         const result = await api.uploadScan(uploadData);
         console.log('Scan upload result:', result);
-        
+
         return result;
       } catch (error) {
         if (isRateLimitError(error)) {
-          throw createRateLimitError('Rate limit exceeded while uploading scan');
+          throw createRateLimitError(
+            'Rate limit exceeded while uploading scan',
+          );
         }
         throw error;
       }

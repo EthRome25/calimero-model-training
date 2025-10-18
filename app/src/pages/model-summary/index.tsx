@@ -10,6 +10,8 @@ interface ModelSummaryPageProps {
 function ModelSummaryContent({ api }: ModelSummaryPageProps) {
   const { data: modelSummary, isLoading, error, refetch } = useModelSummary(api);
 
+  console.log('Model Summary Data:', modelSummary);
+
   if (isLoading) {
     return (
       <div className="empty-state">
@@ -62,7 +64,7 @@ function ModelSummaryContent({ api }: ModelSummaryPageProps) {
             </p>
           </div>
           <div className="professional-header__actions">
-            <button 
+            <button
               className="button button-secondary"
               onClick={() => refetch()}
             >
@@ -101,30 +103,30 @@ function ModelSummaryContent({ api }: ModelSummaryPageProps) {
       </div>
 
       {/* Accuracy Highlight Card */}
-      <div className="calimero-card" style={{ 
+      <div className="calimero-card" style={{
         background: 'linear-gradient(135deg, rgba(181, 255, 17, 0.1) 0%, rgba(181, 255, 17, 0.05) 100%)',
         borderColor: 'var(--border-brand)',
         marginBottom: 'var(--spacing-xxl)',
         padding: 'var(--spacing-xxl)'
       }}>
         {/* 2x2 Grid Layout */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'auto 1fr', 
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'auto 1fr',
           gridTemplateRows: 'auto auto',
           gap: 'var(--spacing-xl)',
           alignItems: 'start'
         }}>
           {/* Row 1, Col 1: Icon */}
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
             alignItems: 'center'
           }}>
-            <div style={{ 
+            <div style={{
               width: '80px',
               height: '80px',
-              background: 'var(--surface-action-default)', 
+              background: 'var(--surface-action-default)',
               color: 'var(--content-on-surface-action-default)',
               fontSize: '2.5rem',
               borderRadius: '12px',
@@ -148,7 +150,7 @@ function ModelSummaryContent({ api }: ModelSummaryPageProps) {
           <div></div>
 
           {/* Row 2, Col 2: Stats */}
-          <div className="horizontal-card__stats" style={{ 
+          <div className="horizontal-card__stats" style={{
             paddingTop: 0,
             borderTop: 'none',
             margin: 0
@@ -202,26 +204,26 @@ function ModelSummaryContent({ api }: ModelSummaryPageProps) {
       </div>
 
       {/* Training Details */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: '1fr 1fr', 
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
         gap: 'var(--spacing-xxl)'
       }} className="training-details-grid">
         <div className="calimero-card" style={{ padding: 'var(--spacing-xxl)' }}>
-          <h3 style={{ 
-            fontSize: '1.25rem', 
-            fontWeight: '700', 
-            color: 'var(--text-primary)', 
+          <h3 style={{
+            fontSize: '1.25rem',
+            fontWeight: '700',
+            color: 'var(--text-primary)',
             marginBottom: 'var(--spacing-xl)',
             fontFamily: 'Power Grotesk, Arial, Helvetica, sans-serif'
           }}>
             Training Progress
           </h3>
           <div style={{ marginBottom: 'var(--spacing-xl)' }}>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              fontSize: '0.875rem', 
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              fontSize: '0.875rem',
               marginBottom: 'var(--spacing-m)',
               color: 'var(--text-muted)'
             }}>
@@ -230,16 +232,16 @@ function ModelSummaryContent({ api }: ModelSummaryPageProps) {
                 {modelSummary.epochsCompleted} / {modelSummary.totalEpochs}
               </span>
             </div>
-            <div style={{ 
-              width: '100%', 
-              background: 'var(--background-tertiary)', 
-              borderRadius: '4px', 
+            <div style={{
+              width: '100%',
+              background: 'var(--background-tertiary)',
+              borderRadius: '4px',
               height: '12px',
               overflow: 'hidden'
             }}>
               <div
-                style={{ 
-                  background: 'var(--surface-action-default)', 
+                style={{
+                  background: 'var(--surface-action-default)',
                   height: '100%',
                   width: `${modelSummary.trainingProgress}%`,
                   transition: 'width 0.3s ease'
@@ -247,9 +249,9 @@ function ModelSummaryContent({ api }: ModelSummaryPageProps) {
               ></div>
             </div>
           </div>
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: '1fr 1fr', 
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
             gap: 'var(--spacing-xl)',
             fontSize: '0.875rem'
           }}>
@@ -265,19 +267,19 @@ function ModelSummaryContent({ api }: ModelSummaryPageProps) {
         </div>
 
         <div className="calimero-card" style={{ padding: 'var(--spacing-xxl)' }}>
-          <h3 style={{ 
-            fontSize: '1.25rem', 
-            fontWeight: '700', 
-            color: 'var(--text-primary)', 
+          <h3 style={{
+            fontSize: '1.25rem',
+            fontWeight: '700',
+            color: 'var(--text-primary)',
             marginBottom: 'var(--spacing-xl)',
             fontFamily: 'Power Grotesk, Arial, Helvetica, sans-serif'
           }}>
             Model Configuration
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-l)' }}>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
               fontSize: '0.875rem',
               paddingBottom: 'var(--spacing-m)',
               borderBottom: '1px solid var(--border-secondary)'
@@ -285,9 +287,9 @@ function ModelSummaryContent({ api }: ModelSummaryPageProps) {
               <span style={{ color: 'var(--text-muted)' }}>Architecture</span>
               <span style={{ color: 'var(--text-primary)', fontWeight: '600' }}>{modelSummary.architecture}</span>
             </div>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
               fontSize: '0.875rem',
               paddingBottom: 'var(--spacing-m)',
               borderBottom: '1px solid var(--border-secondary)'
@@ -295,9 +297,9 @@ function ModelSummaryContent({ api }: ModelSummaryPageProps) {
               <span style={{ color: 'var(--text-muted)' }}>Optimizer</span>
               <span style={{ color: 'var(--text-primary)', fontWeight: '600' }}>{modelSummary.optimizer}</span>
             </div>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
               fontSize: '0.875rem',
               paddingBottom: 'var(--spacing-m)',
               borderBottom: '1px solid var(--border-secondary)'
@@ -305,9 +307,9 @@ function ModelSummaryContent({ api }: ModelSummaryPageProps) {
               <span style={{ color: 'var(--text-muted)' }}>Learning Rate</span>
               <span style={{ color: 'var(--text-primary)', fontWeight: '600' }}>{modelSummary.learningRate}</span>
             </div>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
               fontSize: '0.875rem',
               paddingBottom: 'var(--spacing-m)',
               borderBottom: '1px solid var(--border-secondary)'

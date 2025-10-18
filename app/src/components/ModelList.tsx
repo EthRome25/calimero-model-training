@@ -1,5 +1,4 @@
 import React from 'react';
-import { ModelFile } from '../api/AbiClient';
 
 interface ModelListProps {
   models: ModelFile[];

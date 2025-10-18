@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { AbiClient } from '../api/AbiClient';
+import { AbiClient, Model } from '@/api/AbiClient';
 
 export interface ModelSummary {
   id: string;
@@ -26,24 +26,25 @@ export interface ModelSummary {
 }
 
 // Mock data for model summary
-const mockModelSummary: ModelSummary = {
-  id: 'model_001',
-  name: 'Medical Image Classification Model',
-  version: 'v2.1.0',
+// @ts-ignore
+const mockModelSummary: Model = {
+  id: 'model-123',
+  name: 'Medical Image Classifier v1',
+  version: '1.0.0',
   status: 'completed',
-  accuracy: 94.7,
-  precision: 93.2,
-  recall: 95.1,
-  f1Score: 94.1,
+  accuracy: 72.5,
+  precision: 92.3,
+  recall: 0.912,
+  f1Score: 0.917,
   trainingProgress: 100,
   epochsCompleted: 50,
   totalEpochs: 50,
-  loss: 0.156,
-  validationLoss: 0.189,
+  loss: 0.0234,
+  validationLoss: 0.0456,
   trainingTime: '2h 34m',
-  lastUpdated: '2024-01-15T14:30:00Z',
-  datasetSize: 12500,
-  modelSize: '45.2 MB',
+  lastUpdated: '2025-10-18T14:30:00Z',
+  datasetSize: 10000,
+  modelSize: '234MB',
   architecture: 'ResNet-50',
   optimizer: 'Adam',
   learningRate: 0.001,
@@ -53,13 +54,13 @@ const mockModelSummary: ModelSummary = {
 export function useModelSummary(api: AbiClient | null) {
   return useQuery({
     queryKey: ['modelSummary'],
-    queryFn: async (): Promise<ModelSummary> => {
+    queryFn: async (): Promise<Model> => {
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Return mock data for now
-      // TODO: Replace with actual API call when backend is ready
-      // return await api.getModelSummary();
+
+      if (!api) throw new Error('API not available');
+
+      // return api.getCurrentModel();
       return mockModelSummary;
     },
     enabled: !!api,

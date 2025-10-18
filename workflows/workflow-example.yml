@@ -1,0 +1,129 @@
+description: Medical AI File Transfer application workflow for P2P model sharing and local scan storage
+name: Medical AI File Transfer Workflow
+
+# Force pull Docker images even if they exist locally
+force_pull_image: true
+auth_service: true
+
+nodes:
+  chain_id: testnet-1
+  count: 2
+  image: ghcr.io/calimero-network/merod:edge
+  prefix: calimero-node
+
+steps:
+  # Step 1: Install the application on the first node
+  # This captures the application ID for use in subsequent steps
+  - name: Install Application on Node 1
+    type: install_application
+    node: calimero-node-1
+    path: logic/res/medical_ai_file_transfer.wasm
+    dev: true
+    outputs:
+      app_id: applicationId # Export 'applicationId' field as 'app_id'
+
+  # Step 2: Create a context using the installed application
+  # Uses the captured application ID from step 1
+  - name: Create Context on Node 1
+    type: create_context
+    node: calimero-node-1
+    application_id: "{{app_id}}"
+    outputs:
+      context_id: contextId # Export 'contextId' field as 'context_id'
+      member_public_key: memberPublicKey # Export 'memberPublicKey' as 'member_public_key'
+
+  # Step 3: Generate an identity on the second node
+  # This captures the public key for use in invitation and joining
+  - name: Create Identity on Node 2
+    type: create_identity
+    node: calimero-node-2
+    outputs:
+      public_key: publicKey # Export 'publicKey' as 'public_key'
+
+  # Step 4: Wait for identity creation to complete
+  - name: Wait for Identity Creation
+    type: wait
+    seconds: 5
+
+  # Step 5: Invite the second node to join the context
+  # Uses captured values: context ID, member public key, and identity public key
+  - name: Invite Node 2 from Node 1
+    type: invite_identity
+    node: calimero-node-1
+    context_id: "{{context_id}}"
+    grantee_id: "{{public_key}}"
+    granter_id: "{{member_public_key}}"
+    capability: member
+    outputs:
+      invitation: invitation # Export 'invitation' as 'invitation'
+
+  # Step 6: Join the context from the second node
+  # Uses captured values: context ID, invitee identity, and invitation data
+  - name: Join Context from Node 2
+    type: join_context
+    node: calimero-node-2
+    context_id: "{{context_id}}"
+    invitee_id: "{{public_key}}"
+    invitation: "{{invitation}}"
+
+  # Step 7: Upload a sample ML model
+  # Uses the member public key from the context as the executor
+  - name: Upload Sample ML Model
+    type: call
+    node: calimero-node-1
+    context_id: "{{context_id}}"
+    executor_public_key: "{{member_public_key}}"
+    method: upload_model
+    args:
+      name: "Brain Tumor Classifier v1.0"
+      description: "A deep learning model for classifying brain tumors from MRI scans"
+      model_type: "tumor_classifier"
+      version: "1.0.0"
+      file_data: "dGVzdF9tb2RlbF9kYXRh" # Base64 encoded test data
+      uploader: "Dr. Smith"
+      is_public: true
+    outputs:
+      model_upload_result: result # Export 'result' as 'model_upload_result'
+
+  # Step 8: Wait for the model upload to complete
+  - name: Wait for Model Upload
+    type: wait
+    seconds: 3
+
+  # Step 9: Upload a sample medical scan
+  - name: Upload Sample Medical Scan
+    type: call
+    node: calimero-node-1
+    context_id: "{{context_id}}"
+    executor_public_key: "{{member_public_key}}"
+    method: upload_scan
+    args:
+      patient_id: "PATIENT_001"
+      scan_type: "MRI"
+      body_part: "brain"
+      file_data: "dGVzdF9zY2FuX2RhdGE=" # Base64 encoded test data
+      uploader: "Dr. Johnson"
+    outputs:
+      scan_upload_result: result # Export 'result' as 'scan_upload_result'
+
+  # Step 10: Wait for the scan upload to complete
+  - name: Wait for Scan Upload
+    type: wait
+    seconds: 3
+
+  # Step 11: Get application statistics
+  - name: Get Application Stats
+    type: call
+    node: calimero-node-2
+    context_id: "{{context_id}}"
+    executor_public_key: "{{public_key}}"
+    method: get_stats
+    outputs:
+      stats_result: result # Export 'result' as 'stats_result'
+
+
+# Configuration options
+stop_all_nodes: false # Stop all nodes at the end of workflow
+restart: true # Don't restart nodes at the beginning of workflow
+nuke: false # Nuke the nodes at the end of the workflow
+wait_timeout: 60

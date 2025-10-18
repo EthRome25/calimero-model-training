@@ -11,29 +11,7 @@ export const useModels = (api: AbiClient | null) => {
     queryKey: ['models'],
     queryFn: async () => {
       if (!api) throw new Error('API not available');
-      try {
-        const models = await api.getPublicModels();
-
-        // Sort models by created_at timestamp (latest first)
-        return models.sort((a, b) => {
-          const timestampA =
-            typeof a.created_at === 'string'
-              ? parseFloat(a.created_at)
-              : a.created_at || 0;
-          const timestampB =
-            typeof b.created_at === 'string'
-              ? parseFloat(b.created_at)
-              : b.created_at || 0;
-          return timestampB - timestampA; // Descending order (latest first)
-        });
-      } catch (error) {
-        if (isRateLimitError(error)) {
-          throw createRateLimitError(
-            'Rate limit exceeded while fetching models',
-          );
-        }
-        throw error;
-      }
+      return [];
     },
     enabled: !!api,
     staleTime: 2 * 60 * 1000, // 2 minutes for models

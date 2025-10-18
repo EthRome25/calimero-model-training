@@ -4,22 +4,20 @@ use calimero_sdk::app;
 use calimero_sdk::borsh::{BorshDeserialize, BorshSerialize};
 use calimero_sdk::serde::Serialize;
 use calimero_storage::env;
+use std::option::Option;
 
 // Single application state containing the current model only
 #[app::state]
 #[derive(Debug, BorshSerialize, BorshDeserialize)]
 #[borsh(crate = "calimero_sdk::borsh")]
-pub struct State {
-    // Holds the current model if uploaded (encoded to binary file structure)
-    pub current_model: Option<ModelFile>,
-    // Optional metadata associated with the current model
-    pub current_model_metadata: Option<ModelMetadata>,
+pub struct AppState {
+    model: Option<Model>,
 }
 
 #[derive(Debug, BorshSerialize, BorshDeserialize, Serialize, Clone)]
 #[borsh(crate = "calimero_sdk::borsh")]
 #[serde(crate = "calimero_sdk::serde")]
-pub struct ModelFile {
+pub struct Model {
     pub id: String,
     pub name: String,
     pub description: String,
@@ -30,6 +28,10 @@ pub struct ModelFile {
     pub uploader: String,
     pub created_at: u64,
     pub is_public: bool,
+    pub prediction_accuracy: u8,
+    pub model_params: String,
+    // Optional metadata associated with the current model
+    // pub current_model_metadata: Option<ModelMetadata>
 }
 
 // Additional metadata describing the current model
@@ -38,7 +40,7 @@ pub struct ModelFile {
 #[serde(crate = "calimero_sdk::serde")]
 pub struct ModelMetadata {
     // Overall prediction accuracy (e.g., between 0.0 and 1.0)
-    pub prediction_accuracy: f32,
+    pub prediction_accuracy: u8,
     // Unix timestamp (seconds) when the model was produced/uploaded
     pub date: u64,
     // Free-form model parameters (can be JSON string or similar)
@@ -46,13 +48,10 @@ pub struct ModelMetadata {
 }
 
 #[app::logic]
-impl State {
+impl AppState {
     #[app::init]
-    pub fn init() -> State {
-        State {
-            current_model: None,
-            current_model_metadata: None,
-        }
+    pub fn init() -> AppState {
+        AppState { model: None }
     }
 
     // Upload and set the current model. Accepts raw binary data and separate metadata.
@@ -79,7 +78,7 @@ impl State {
         let model_id = format!("model:{}:{}", name, version);
         let created_at = env::time_now();
 
-        let model = ModelFile {
+        let model = Model {
             id: model_id.clone(),
             name,
             description,
@@ -90,25 +89,23 @@ impl State {
             uploader,
             created_at,
             is_public,
+            // current_model_metadata: None,
+            prediction_accuracy: 0,
+            model_params,
         };
 
-        self.current_model = Some(model);
-        self.current_model_metadata = Some(ModelMetadata {
-            prediction_accuracy,
-            date,
-            model_params,
-        });
+        self.model = Some(model);
 
         Ok(model_id)
     }
 
     // Returns the metadata for the current model, if any.
-    pub fn get_current_model_metadata(&self) -> app::Result<Option<ModelMetadata>> {
-        Ok(self.current_model_metadata.clone())
-    }
+    // pub fn get_current_model_metadata(&self) -> app::Result<Option<ModelMetadata>> {
+    //     Ok(self.model.as_ref().unwrap().current_model_metadata.clone())
+    // }
 
-    // Convenience: return the current model (without bytes decoding)
-    pub fn get_current_model(&self) -> app::Result<Option<ModelFile>> {
-        Ok(self.current_model.clone())
+    // Returns the current model, if any.
+    pub fn get_current_model(&self) -> app::Result<Option<Model>> {
+        Ok(self.model.clone())
     }
 }

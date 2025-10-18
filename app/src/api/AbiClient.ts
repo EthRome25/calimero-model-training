@@ -7,19 +7,6 @@ import {
 
 // Generated types
 
-export interface ModelFile {
-  id: string;
-  name: string;
-  description: string;
-  model_type: string;
-  version: string;
-  file_size: number;
-  file_data: string;
-  uploader: string;
-  created_at: number | string | null | undefined;
-  is_public: boolean;
-}
-
 export interface ModelMetadata {
   prediction_accuracy: number;
   date: number;
@@ -163,18 +150,6 @@ export class AbiClient {
     const response = await this.app.execute(this.context, 'get_current_model_metadata', {});
     if (response.success) {
       return response.result as ModelMetadata;
-    } else {
-      throw new Error(response.error || 'Execution failed');
-    }
-  }
-
-  /**
-   * get_current_model
-   */
-  public async getCurrentModel(): Promise<ModelFile> {
-    const response = await this.app.execute(this.context, 'get_current_model', {});
-    if (response.success) {
-      return response.result as ModelFile;
     } else {
       throw new Error(response.error || 'Execution failed');
     }

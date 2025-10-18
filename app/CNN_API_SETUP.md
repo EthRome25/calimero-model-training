@@ -12,17 +12,20 @@ VITE_CNN_API_URL=http://localhost:8000
 ```
 
 ### Default Configuration
+
 - **Default URL**: `http://localhost:8000`
 - **Environment Variable**: `VITE_CNN_API_URL`
 
 ## Features
 
 ### Automatic AI Analysis
+
 - When brain MRI scans are uploaded, the system automatically sends them to the CNN API for analysis
 - Only brain MRI scans are analyzed (other scan types are uploaded normally without AI analysis)
 - Results are displayed in a dedicated section below the upload form
 
 ### Prediction Results Display
+
 - **Predicted Diagnosis**: Shows the most likely brain tumor type
 - **Confidence Score**: Displays the confidence percentage for the prediction
 - **Probability Breakdown**: Visual bar chart showing probabilities for all tumor types:
@@ -34,6 +37,7 @@ VITE_CNN_API_URL=http://localhost:8000
 - **Medical Disclaimer**: Includes appropriate medical disclaimers
 
 ### Error Handling
+
 - Graceful handling of API connection issues
 - Timeout protection (30 seconds for predictions)
 - User-friendly error messages
@@ -63,16 +67,19 @@ VITE_CNN_API_URL=http://localhost:8000
 ## Troubleshooting
 
 ### CNN API Not Available
+
 - Check if the CNN API server is running
 - Verify the `VITE_CNN_API_URL` environment variable
 - Check network connectivity to the API endpoint
 
 ### Analysis Fails
+
 - Ensure uploaded files are valid medical images (JPEG/PNG)
 - Check that the CNN API server is responding to health checks
 - Review browser console for detailed error messages
 
 ### No Analysis Results
+
 - Verify that uploaded scans are brain MRI scans
 - Check that the scan type is set to "MRI" and body part to "brain"
 - Ensure the CNN API is accessible and responding

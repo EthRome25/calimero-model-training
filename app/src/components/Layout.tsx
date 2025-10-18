@@ -1,19 +1,19 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Navbar as MeroNavbar,
   NavbarBrand,
-  NavbarMenu,
   NavbarItem,
   CopyToClipboard,
   Text,
-  Badge,
+  useToast,
+  NavbarMenu,
 } from '@calimero-network/mero-ui';
 import translations from '../constants/en.global.json';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
-  useCalimero,
   CalimeroConnectButton,
   ConnectionType,
+  useCalimero,
 } from '@calimero-network/calimero-client';
 import { AbiClient } from '../api/AbiClient';
 
@@ -57,19 +57,7 @@ export default function Layout({ children, api }: LayoutProps) {
   }, [api, app, appUrl]);
 
   const getStats = useCallback(async () => {
-    if (loadingStatsRef.current || !api) return;
-    loadingStatsRef.current = true;
-    try {
-      const data = await api.getStats();
-      setStats(data);
-    } catch (error) {
-      console.error('getStats error:', error);
-      window.alert(
-        error instanceof Error ? error.message : 'Failed to load statistics',
-      );
-    } finally {
-      loadingStatsRef.current = false;
-    }
+    return {};
   }, [api]);
 
   useEffect(() => {

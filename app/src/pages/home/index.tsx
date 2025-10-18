@@ -21,19 +21,7 @@ export default function HomePage({ api }: HomePageProps) {
   }, [isAuthenticated, navigate]);
 
   const getStats = useCallback(async () => {
-    if (loadingStatsRef.current || !api) return;
-    loadingStatsRef.current = true;
-    try {
-      const data = await api.getStats();
-      setStats(data);
-    } catch (error) {
-      console.error('getStats error:', error);
-      window.alert(
-        error instanceof Error ? error.message : 'Failed to load statistics',
-      );
-    } finally {
-      loadingStatsRef.current = false;
-    }
+    return {};
   }, [api]);
 
   useEffect(() => {
@@ -48,23 +36,27 @@ export default function HomePage({ api }: HomePageProps) {
         <div className="calimero-hero-content">
           <h1>Medical AI Training Platform</h1>
           <p>
-            Securely train, deploy, and share medical AI models with privacy-preserving peer-to-peer technology. 
-            Upload medical scans and ML models while maintaining complete data ownership and HIPAA compliance.
+            Securely train, deploy, and share medical AI models with
+            privacy-preserving peer-to-peer technology. Upload medical scans and
+            ML models while maintaining complete data ownership and HIPAA
+            compliance.
           </p>
-          <div style={{ 
-            display: 'flex', 
-            gap: 'var(--spacing-l)', 
-            justifyContent: 'center',
-            flexWrap: 'wrap',
-            marginTop: 'var(--spacing-xxl)'
-          }}>
-            <button 
+          <div
+            style={{
+              display: 'flex',
+              gap: 'var(--spacing-l)',
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+              marginTop: 'var(--spacing-xxl)',
+            }}
+          >
+            <button
               className="button button-primary"
               onClick={() => navigate('/upload-model')}
             >
               🧠 Upload AI Model
             </button>
-            <button 
+            <button
               className="button button-secondary"
               onClick={() => navigate('/upload-scan')}
             >
@@ -75,15 +67,23 @@ export default function HomePage({ api }: HomePageProps) {
       </div>
 
       {stats && (
-        <div className="calimero-container" style={{ paddingTop: 'var(--spacing-xxl)', paddingBottom: 'var(--spacing-xxl)' }}>
+        <div
+          className="calimero-container"
+          style={{
+            paddingTop: 'var(--spacing-xxl)',
+            paddingBottom: 'var(--spacing-xxl)',
+          }}
+        >
           <div className="calimero-card">
-            <h2 style={{
-              fontSize: '2rem',
-              fontWeight: '700',
-              textAlign: 'center',
-              marginBottom: 'var(--spacing-xl)',
-              color: 'var(--text-primary)'
-            }}>
+            <h2
+              style={{
+                fontSize: '2rem',
+                fontWeight: '700',
+                textAlign: 'center',
+                marginBottom: 'var(--spacing-xl)',
+                color: 'var(--text-primary)',
+              }}
+            >
               Medical AI Platform Statistics
             </h2>
             <div className="calimero-stats-grid">

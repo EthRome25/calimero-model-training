@@ -6,6 +6,7 @@ import {
   useCalimero,
 } from '@calimero-network/calimero-client';
 import { ToastProvider } from '@calimero-network/mero-ui';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import HomePage from './pages/home';
 import Authenticate from './pages/login/Authenticate';
@@ -99,7 +100,7 @@ function AppContent() {
             </p>
             <button
               onClick={() => (window.location.href = '/')}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="button button-primary"
             >
               Go to Login
             </button>
@@ -143,7 +144,8 @@ function AppContent() {
               </ul>
               <button
                 onClick={() => window.location.reload()}
-                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                className="button button-primary"
+                style={{ marginTop: 'var(--spacing-l)' }}
               >
                 Retry Connection
               </button>
@@ -237,7 +239,7 @@ function AppContent() {
               </p>
               <button
                 onClick={() => (window.location.href = '/')}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                className="button button-primary"
               >
                 Go Home
               </button>
@@ -249,6 +251,37 @@ function AppContent() {
   );
 }
 
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+      retry: (failureCount, error) => {
+        // Don't retry on rate limit errors
+        if (error?.message?.includes('Rate limit exceeded')) {
+          return false;
+        }
+        // Retry up to 3 times for other errors
+        return failureCount < 3;
+      },
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
+      refetchOnWindowFocus: false,
+    },
+    mutations: {
+      retry: (failureCount, error) => {
+        // Don't retry mutations on rate limit errors
+        if (error?.message?.includes('Rate limit exceeded')) {
+          return false;
+        }
+        // Retry up to 2 times for other errors
+        return failureCount < 2;
+      },
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000), // Exponential backoff
+    },
+  },
+});
+
 export default function App() {
   const [clientAppId] = useState<string>(
     'HELDXwknx9tVnj3JKfa3EMyGB9JEsApeijVHzKn5cRVX', // Application ID from bootstrap
@@ -256,15 +289,17 @@ export default function App() {
 
   return (
     <BrowserRouter basename="/">
-      <CalimeroProvider
-        clientApplicationId={clientAppId}
-        applicationPath={window.location.pathname || '/'}
-        mode={AppMode.MultiContext}
-      >
-        <ToastProvider>
-          <AppContent />
-        </ToastProvider>
-      </CalimeroProvider>
+      <QueryClientProvider client={queryClient}>
+        <CalimeroProvider
+          clientApplicationId={clientAppId}
+          applicationPath={window.location.pathname || '/'}
+          mode={AppMode.MultiContext}
+        >
+          <ToastProvider>
+            <AppContent />
+          </ToastProvider>
+        </CalimeroProvider>
+      </QueryClientProvider>
     </BrowserRouter>
   );
 }

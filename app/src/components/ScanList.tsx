@@ -1,19 +1,10 @@
 import React from 'react';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Button,
-  Badge,
-} from '@calimero-network/mero-ui';
 import { ScanFile } from '../api/AbiClient';
 
 interface ScanListProps {
   scans: ScanFile[];
   onDownload: (scanId: string) => void;
   onDelete: (scanId: string) => void;
-  onAddAnnotation: (scanId: string, label: string) => void;
   isDownloading: boolean;
   downloadingScanId: string | null;
 }
@@ -22,7 +13,6 @@ export default function ScanList({
   scans,
   onDownload,
   onDelete,
-  onAddAnnotation,
   isDownloading,
   downloadingScanId,
 }: ScanListProps) {
@@ -34,111 +24,188 @@ export default function ScanList({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleDateString();
+  const formatDate = (timestamp: number | string | undefined | null): string | React.JSX.Element => {
+    try {
+      // Handle null/undefined
+      if (timestamp === null || timestamp === undefined) {
+        return 'No Date';
+      }
+      
+      // Handle different timestamp formats
+      let date: Date;
+      let numericTimestamp: number;
+      
+      // Convert to number if it's a string
+      if (typeof timestamp === 'string') {
+        // Try to parse as a number first
+        numericTimestamp = parseFloat(timestamp);
+        if (isNaN(numericTimestamp)) {
+          // If it's not a number, try to parse as a date string
+          date = new Date(timestamp);
+          if (!isNaN(date.getTime())) {
+            const dateStr = date.toLocaleDateString();
+            const timeStr = date.toLocaleTimeString();
+            return (
+              <div>
+                <div>{dateStr}</div>
+                <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>{timeStr}</div>
+              </div>
+            );
+          } else {
+            return 'Invalid Date';
+          }
+        }
+      } else {
+        numericTimestamp = timestamp;
+      }
+      
+      if (!numericTimestamp || numericTimestamp === 0) {
+        return 'No Date';
+      }
+      
+      if (numericTimestamp < 10000000000) {
+        // Unix timestamp in seconds, convert to milliseconds
+        date = new Date(numericTimestamp * 1000);
+      } else if (numericTimestamp > 1000000000000000000) {
+        // Unix timestamp in nanoseconds, convert to milliseconds
+        date = new Date(numericTimestamp / 1000000);
+      } else {
+        // Unix timestamp in milliseconds
+        date = new Date(numericTimestamp);
+      }
+      
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        return 'Invalid Date';
+      }
+      
+      const dateStr = date.toLocaleDateString();
+      const timeStr = date.toLocaleTimeString();
+      return (
+        <div>
+          <div>{dateStr}</div>
+          <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>{timeStr}</div>
+        </div>
+      );
+    } catch (error) {
+      console.error('Error formatting date:', error, 'timestamp:', timestamp);
+      return 'Error Date';
+    }
   };
 
-  const getScanTypeColor = (type: string) => {
-    const colors: { [key: string]: string } = {
-      MRI: 'bg-blue-100 text-blue-800',
-      CT: 'bg-green-100 text-green-800',
-      PET: 'bg-purple-100 text-purple-800',
-      Ultrasound: 'bg-yellow-100 text-yellow-800',
-      'X-Ray': 'bg-red-100 text-red-800',
+  const getScanTypeIcon = (type: string) => {
+    const icons: { [key: string]: string } = {
+      MRI: '🧠',
+      CT: '🔬',
+      PET: '⚛️',
+      Ultrasound: '📡',
+      'X-Ray': '📷',
     };
-    return colors[type] || 'bg-gray-100 text-gray-800';
+    return icons[type] || '🏥';
   };
 
-  const getBodyPartColor = (part: string) => {
-    const colors: { [key: string]: string } = {
-      brain: 'bg-pink-100 text-pink-800',
-      chest: 'bg-blue-100 text-blue-800',
-      abdomen: 'bg-green-100 text-green-800',
-      spine: 'bg-purple-100 text-purple-800',
-      pelvis: 'bg-yellow-100 text-yellow-800',
-      extremities: 'bg-orange-100 text-orange-800',
+  const getBodyPartIcon = (part: string) => {
+    const icons: { [key: string]: string } = {
+      brain: '🧠',
+      chest: '🫁',
+      abdomen: '🫀',
+      spine: '🦴',
+      pelvis: '🦴',
+      extremities: '🦵',
     };
-    return colors[part] || 'bg-gray-100 text-gray-800';
+    return icons[part] || '🏥';
   };
 
   if (scans.length === 0) {
     return (
-      <Card>
-        <CardContent className="text-center py-8">
-          <p className="text-gray-500">No scans available</p>
-        </CardContent>
-      </Card>
+      <div className="empty-state">
+        <div className="empty-state__icon">🏥</div>
+        <h3 className="empty-state__title">No Medical Scans Available</h3>
+        <p className="empty-state__description">
+          Upload your first medical scan to get started with secure, peer-to-peer medical data sharing.
+        </p>
+      </div>
     );
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="space-y-4">
       {scans.map((scan) => (
-        <Card key={scan.id} className="hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <div className="flex justify-between items-start">
-              <CardTitle className="text-lg">
-                Scan {scan.id.slice(-8)}
-              </CardTitle>
-              <div className="flex gap-1">
-                <Badge className={getScanTypeColor(scan.scan_type)}>
+        <div key={scan.id} className="horizontal-card__background">
+          <div className="horizontal-card__content">
+            <div className="horizontal-card__icon">
+              {getScanTypeIcon(scan.scan_type)}
+            </div>
+            
+            <div className="horizontal-card__main">
+              <h3 className="horizontal-card__title">
+                {scan.scan_type} Scan - {scan.body_part}
+              </h3>
+              
+              <p className="horizontal-card__description">
+                Medical scan for patient {scan.patient_id}. Uploaded by {scan.uploader} on {formatDate(scan.created_at)}.
+                This scan contains detailed imaging data for diagnostic analysis and medical research.
+              </p>
+              
+              <div className="horizontal-card__meta">
+                <span className="horizontal-card__badge horizontal-card__badge--primary">
                   {scan.scan_type}
-                </Badge>
-                <Badge className={getBodyPartColor(scan.body_part)}>
+                </span>
+                <span className="horizontal-card__badge horizontal-card__badge--secondary">
                   {scan.body_part}
-                </Badge>
+                </span>
+                <span className="horizontal-card__badge">
+                  {formatFileSize(scan.file_size)}
+                </span>
+              </div>
+              
+              <div className="horizontal-card__actions">
+                <button
+                  className="button button-primary"
+                  onClick={() => onDownload(scan.id)}
+                  disabled={isDownloading && downloadingScanId === scan.id}
+                >
+                  {isDownloading && downloadingScanId === scan.id
+                    ? 'Downloading...'
+                    : 'Download'}
+                </button>
+                <button
+                  className="button button-secondary"
+                  onClick={() => onDelete(scan.id)}
+                  style={{ 
+                    color: '#ef4444',
+                    borderColor: '#ef4444'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#ef4444';
+                    e.currentTarget.style.color = '#ffffff';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = '#ef4444';
+                  }}
+                >
+                  Delete
+                </button>
               </div>
             </div>
-            <p className="text-sm text-gray-600">Patient: {scan.patient_id}</p>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-500">Size:</span>
-                <span>{formatFileSize(scan.file_size)}</span>
+            
+            <div className="horizontal-card__stats">
+              <div className="horizontal-card__stat">
+                <div className="horizontal-card__stat-value">
+                  {formatFileSize(scan.file_size)}
+                </div>
+                <div className="horizontal-card__stat-label">File Size</div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Uploader:</span>
-                <span>{scan.uploader}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Created:</span>
-                <span>{formatDate(scan.created_at)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Annotations:</span>
-                <Badge variant="outline">{scan.annotation_count}</Badge>
+              <div className="horizontal-card__stat">
+                <div className="horizontal-card__stat-label">Created</div>
+                <div className="horizontal-card__stat-value">
+                  {formatDate(scan.created_at)}
+                </div>
               </div>
             </div>
-
-            <div className="flex gap-2 mt-4">
-              <Button
-                onClick={() => onDownload(scan.id)}
-                disabled={isDownloading && downloadingScanId === scan.id}
-                size="sm"
-                className="flex-1"
-              >
-                {isDownloading && downloadingScanId === scan.id
-                  ? 'Downloading...'
-                  : 'Download'}
-              </Button>
-              <Button
-                onClick={() => onAddAnnotation(scan.id, 'tumor_detected')}
-                variant="outline"
-                size="sm"
-              >
-                Annotate
-              </Button>
-              <Button
-                onClick={() => onDelete(scan.id)}
-                variant="destructive"
-                size="sm"
-              >
-                Delete
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       ))}
     </div>
   );

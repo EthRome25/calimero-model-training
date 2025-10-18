@@ -5,9 +5,6 @@ import {
   NavbarBrand,
   NavbarMenu,
   NavbarItem,
-  Menu,
-  MenuItem,
-  MenuGroup,
   useToast,
   CopyToClipboard,
   Text,
@@ -56,7 +53,7 @@ export default function Layout({ children, api }: LayoutProps) {
           }
         } catch (error) {
           console.error('Failed to get context:', error);
-        }
+        }                                                                                                                                                                                                                                                                                   
       };
       setContext();
     }
@@ -103,9 +100,9 @@ export default function Layout({ children, api }: LayoutProps) {
 
   return (
     <>
-      <MeroNavbar variant="elevated" size="md">
-        <NavbarBrand text="Medical AI File Transfer" />
-        <NavbarMenu align="center">
+      <MeroNavbar variant="elevated" size="md" className="calimero-navbar">
+        <NavbarBrand text="Medical AI File Transfer" className="calimero-navbar-brand" />
+        <NavbarMenu align="center" className="calimero-navbar-menu">
           {currentContext && (
             <div
               style={{
@@ -113,7 +110,7 @@ export default function Layout({ children, api }: LayoutProps) {
                 gap: '1.5rem',
                 alignItems: 'center',
                 fontSize: '0.875rem',
-                color: '#9ca3af',
+                color: 'var(--text-muted)',
                 flexWrap: 'wrap',
                 justifyContent: 'center',
               }}
@@ -126,7 +123,7 @@ export default function Layout({ children, api }: LayoutProps) {
                 </Text>
                 <Text
                   size="sm"
-                  style={{ fontFamily: 'monospace', color: '#e5e7eb' }}
+                  style={{ fontFamily: 'monospace', color: 'var(--text-secondary)' }}
                 >
                   {currentContext.nodeUrl
                     .replace('http://', '')
@@ -147,7 +144,7 @@ export default function Layout({ children, api }: LayoutProps) {
                 </Text>
                 <Text
                   size="sm"
-                  style={{ fontFamily: 'monospace', color: '#e5e7eb' }}
+                  style={{ fontFamily: 'monospace', color: 'var(--text-secondary)' }}
                 >
                   {currentContext.applicationId.slice(0, 8)}...
                   {currentContext.applicationId.slice(-8)}
@@ -167,7 +164,7 @@ export default function Layout({ children, api }: LayoutProps) {
                 </Text>
                 <Text
                   size="sm"
-                  style={{ fontFamily: 'monospace', color: '#e5e7eb' }}
+                  style={{ fontFamily: 'monospace', color: 'var(--text-secondary)' }}
                 >
                   {currentContext.contextId.slice(0, 8)}...
                   {currentContext.contextId.slice(-8)}
@@ -184,21 +181,29 @@ export default function Layout({ children, api }: LayoutProps) {
         </NavbarMenu>
         <NavbarMenu align="right">
           {isAuthenticated ? (
-            <Menu variant="compact" size="md">
-              <MenuGroup>
-                <MenuItem onClick={doLogout}>
-                  {translations.home.logout}
-                </MenuItem>
-              </MenuGroup>
-            </Menu>
+            <button 
+              className="button button-secondary"
+              onClick={doLogout}
+              style={{ fontSize: '0.875rem' }}
+            >
+              {translations.home.logout}
+            </button>
           ) : (
             <NavbarItem>
-              <CalimeroConnectButton
-                connectionType={{
-                  type: ConnectionType.Custom,
-                  url: 'http://node1.127.0.0.1.nip.io',
+              <div 
+                className="calimero-connect-button"
+                style={{
+                  position: 'relative',
+                  display: 'inline-block'
                 }}
-              />
+              >
+                <CalimeroConnectButton
+                  connectionType={{
+                    type: ConnectionType.Custom,
+                    url: 'http://node1.127.0.0.1.nip.io',
+                  }}
+                />
+              </div>
             </NavbarItem>
           )}
         </NavbarMenu>
@@ -206,57 +211,101 @@ export default function Layout({ children, api }: LayoutProps) {
       <div
         style={{
           minHeight: '100vh',
-          backgroundColor: '#111111',
-          color: 'white',
+          backgroundColor: 'var(--background-primary)',
+          color: 'var(--text-primary)',
+          position: 'relative',
         }}
       >
-        <div className="container mx-auto p-6 space-y-6">
-          <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold">Medical AI File Transfer</h1>
-            {stats && (
-              <Badge variant="outline" className="text-sm">
-                {stats}
-              </Badge>
-            )}
-          </div>
+        {/* Grid Lines */}
+        <div className="grid-line">
+          <div className="grid-line__item"></div>
+          <div className="grid-line__item"></div>
+          <div className="grid-line__item"></div>
+          <div className="grid-line__item"></div>
+          <div className="grid-line__item"></div>
+          <div className="grid-line__item"></div>
+          <div className="grid-line__item"></div>
+          <div className="grid-line__item"></div>
+          <div className="grid-line__item"></div>
+          <div className="grid-line__item"></div>
+          <div className="grid-line__item"></div>
+          <div className="grid-line__item"></div>
+        </div>
 
-          <div className="w-full">
+        <div className="calimero-container" style={{ paddingTop: 'var(--spacing-xl)', paddingBottom: 'var(--spacing-xl)' }}>
+          <div style={{ marginBottom: 'var(--spacing-xl)' }}>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              marginBottom: 'var(--spacing-l)'
+            }}>
+              <h1 style={{
+                fontSize: '2rem',
+                fontWeight: '700',
+                color: 'var(--text-primary)',
+                margin: 0,
+                background: 'linear-gradient(135deg, var(--text-primary) 0%, var(--surface-action-default) 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}>
+                Medical AI File Transfer
+              </h1>
+              {stats && (
+                <Badge variant="outline" style={{ 
+                  color: 'var(--surface-action-default)',
+                  borderColor: 'var(--border-brand)',
+                  backgroundColor: 'transparent'
+                }}>
+                  {stats}
+                </Badge>
+              )}
+            </div>
+
             {/* Navigation */}
-            <div className="flex flex-wrap gap-2 mb-6">
-              <Button
+            <div style={{ 
+              display: 'flex', 
+              flexWrap: 'wrap', 
+              gap: 'var(--spacing-s)',
+              marginBottom: 'var(--spacing-xl)'
+            }}>
+              <button
                 onClick={() => navigate('/home')}
-                variant={currentRoute === 'home' ? 'primary' : 'secondary'}
+                className={`button ${currentRoute === 'home' ? 'button-primary' : 'button-secondary'}`}
               >
                 Home
-              </Button>
-              <Button
+              </button>
+              <button
                 onClick={() => navigate('/models')}
-                variant={currentRoute === 'models' ? 'primary' : 'secondary'}
+                className={`button ${currentRoute === 'models' ? 'button-primary' : 'button-secondary'}`}
               >
                 ML Models
-              </Button>
-              <Button
+              </button>
+              <button
                 onClick={() => navigate('/scans')}
-                variant={currentRoute === 'scans' ? 'primary' : 'secondary'}
+                className={`button ${currentRoute === 'scans' ? 'button-primary' : 'button-secondary'}`}
               >
                 Medical Scans
-              </Button>
-              <Button
+              </button>
+              <button
                 onClick={() => navigate('/upload-model')}
-                variant={currentRoute === 'upload-model' ? 'primary' : 'secondary'}
+                className={`button ${currentRoute === 'upload-model' ? 'button-primary' : 'button-secondary'}`}
               >
                 Upload Model
-              </Button>
-              <Button
+              </button>
+              <button
                 onClick={() => navigate('/upload-scan')}
-                variant={currentRoute === 'upload-scan' ? 'primary' : 'secondary'}
+                className={`button ${currentRoute === 'upload-scan' ? 'button-primary' : 'button-secondary'}`}
               >
                 Upload Scan
-              </Button>
+              </button>
             </div>
 
             {/* Content */}
-            {children}
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              {children}
+            </div>
           </div>
         </div>
       </div>

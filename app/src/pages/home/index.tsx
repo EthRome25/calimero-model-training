@@ -50,114 +50,71 @@ export default function HomePage({ api }: HomePageProps) {
 
   return (
     <Layout api={api}>
-      <div className="space-y-4">
-        <Card variant="rounded" style={{ marginBottom: '2rem' }}>
-          <CardHeader>
-            <CardTitle>Welcome to Medical AI File Transfer</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-              <h2
-                style={{
-                  fontSize: '1.5rem',
-                  marginBottom: '1rem',
-                  color: '#e5e7eb',
-                }}
-              >
-                Secure P2P Medical Data Sharing
-              </h2>
-              <p
-                style={{
-                  color: '#9ca3af',
-                  marginBottom: '2rem',
-                  lineHeight: '1.6',
-                }}
-              >
-                Upload and share ML models and MRI tumor scan images
-                securely on the Calimero network. Your medical data is
-                stored locally and shared peer-to-peer with full privacy
-                protection.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {stats && (
-          <Card variant="rounded" style={{ width: '100%' }}>
-            <CardHeader>
-              <CardTitle>Application Statistics</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns:
-                    'repeat(auto-fit, minmax(200px, 1fr))',
-                  gap: '1rem',
-                }}
-              >
-                <div
-                  style={{
-                    textAlign: 'center',
-                    padding: '1rem',
-                    backgroundColor: '#1f2937',
-                    borderRadius: '8px',
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: '2rem',
-                      fontWeight: 'bold',
-                      color: '#3b82f6',
-                    }}
-                  >
-                    {stats.total_models || 0}
-                  </div>
-                  <div style={{ color: '#9ca3af' }}>ML Models</div>
-                </div>
-                <div
-                  style={{
-                    textAlign: 'center',
-                    padding: '1rem',
-                    backgroundColor: '#1f2937',
-                    borderRadius: '8px',
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: '2rem',
-                      fontWeight: 'bold',
-                      color: '#10b981',
-                    }}
-                  >
-                    {stats.total_scans || 0}
-                  </div>
-                  <div style={{ color: '#9ca3af' }}>Medical Scans</div>
-                </div>
-                <div
-                  style={{
-                    textAlign: 'center',
-                    padding: '1rem',
-                    backgroundColor: '#1f2937',
-                    borderRadius: '8px',
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: '2rem',
-                      fontWeight: 'bold',
-                      color: '#f59e0b',
-                    }}
-                  >
-                    {stats.total_annotations || 0}
-                  </div>
-                  <div style={{ color: '#9ca3af' }}>Annotations</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+      <div className="calimero-hero">
+        <div className="calimero-hero-content">
+          <h1>Medical AI Training Platform</h1>
+          <p>
+            Securely train, deploy, and share medical AI models with privacy-preserving peer-to-peer technology. 
+            Upload medical scans and ML models while maintaining complete data ownership and HIPAA compliance.
+          </p>
+          <div style={{ 
+            display: 'flex', 
+            gap: 'var(--spacing-l)', 
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+            marginTop: 'var(--spacing-xxl)'
+          }}>
+            <button 
+              className="button button-primary"
+              onClick={() => navigate('/upload-model')}
+            >
+              🧠 Upload AI Model
+            </button>
+            <button 
+              className="button button-secondary"
+              onClick={() => navigate('/upload-scan')}
+            >
+              🏥 Upload Medical Scan
+            </button>
+          </div>
+        </div>
       </div>
+
+      {stats && (
+        <div className="calimero-container" style={{ paddingTop: 'var(--spacing-xxl)', paddingBottom: 'var(--spacing-xxl)' }}>
+          <div className="calimero-card">
+            <h2 style={{
+              fontSize: '2rem',
+              fontWeight: '700',
+              textAlign: 'center',
+              marginBottom: 'var(--spacing-xl)',
+              color: 'var(--text-primary)'
+            }}>
+              Medical AI Platform Statistics
+            </h2>
+            <div className="calimero-stats-grid">
+              <div className="calimero-stat-card">
+                <div className="calimero-stat-number">
+                  {stats.total_models || 0}
+                </div>
+                <div className="calimero-stat-label">🧠 AI Models</div>
+              </div>
+              <div className="calimero-stat-card">
+                <div className="calimero-stat-number">
+                  {stats.total_scans || 0}
+                </div>
+                <div className="calimero-stat-label">🏥 Medical Scans</div>
+              </div>
+              <div className="calimero-stat-card">
+                <div className="calimero-stat-number">
+                  {stats.total_annotations || 0}
+                </div>
+                <div className="calimero-stat-label">📝 Annotations</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 }

@@ -1,17 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '@calimero-network/mero-ui';
-import { AbiClient, ModelFile } from '../../api/AbiClient';
+import React, { useState } from 'react';
+import { AbiClient } from '../../api/AbiClient';
 import ModelList from '../../components/ModelList';
 import Layout from '../../components/Layout';
+import { useModels, useDownloadModel, useDeleteModel } from '../../hooks/useModels';
+import { isRateLimitError, getRateLimitMessage } from '../../utils/errorHandling';
 
 interface ModelsPageProps {
   api: AbiClient;
 }
 
 export default function ModelsPage({ api }: ModelsPageProps) {
-  const [models, setModels] = useState<ModelFile[]>([]);
-  const [isDownloading, setIsDownloading] = useState(false);
   const [downloadingModelId, setDownloadingModelId] = useState<string | null>(null);
+
+  // React Query hooks
+  const { data: models = [], isLoading, error, refetch } = useModels(api);
+  const downloadModelMutation = useDownloadModel(api);
+  const deleteModelMutation = useDeleteModel(api);
 
   // Helper function to convert base64 string to binary blob
   const base64ToBlob = (
@@ -26,28 +30,14 @@ export default function ModelsPage({ api }: ModelsPageProps) {
     return new Blob([bytes], { type: mimeType });
   };
 
-  const loadModels = async () => {
-    try {
-      const publicModels = await api.getPublicModels();
-      setModels(publicModels);
-    } catch (error) {
-      console.error('Error loading models:', error);
-    }
-  };
-
-  useEffect(() => {
-    loadModels();
-  }, []);
-
   const handleModelDownload = async (modelId: string) => {
-    setIsDownloading(true);
     setDownloadingModelId(modelId);
     try {
       console.log('=== MODEL DOWNLOAD DEBUG ===');
       console.log('Downloading model ID:', modelId);
 
-      const model = await api.downloadModel({
-        model_id: modelId,
+      const model = await downloadModelMutation.mutateAsync({
+        modelId,
         downloader: 'current_user',
       });
 
@@ -83,7 +73,6 @@ export default function ModelsPage({ api }: ModelsPageProps) {
       console.error('Error downloading model:', error);
       alert('Error downloading model');
     } finally {
-      setIsDownloading(false);
       setDownloadingModelId(null);
     }
   };
@@ -91,8 +80,7 @@ export default function ModelsPage({ api }: ModelsPageProps) {
   const handleModelDelete = async (modelId: string) => {
     if (confirm('Are you sure you want to delete this model?')) {
       try {
-        await api.deleteFile({ file_id: modelId, file_type: 'model' });
-        await loadModels();
+        await deleteModelMutation.mutateAsync({ modelId });
       } catch (error) {
         console.error('Error deleting model:', error);
         alert('Error deleting model');
@@ -102,20 +90,70 @@ export default function ModelsPage({ api }: ModelsPageProps) {
 
   return (
     <Layout api={api}>
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-semibold">Available ML Models</h2>
-          <Button onClick={loadModels} variant="secondary">
-            Refresh
-          </Button>
+      <div className="calimero-container">
+        <div className="professional-header">
+          <div className="professional-header__content">
+            <div>
+              <h1 className="professional-header__title">Machine Learning Models</h1>
+              <p className="professional-header__subtitle">
+                Advanced AI models for medical imaging analysis, secure peer-to-peer sharing with full privacy protection
+              </p>
+            </div>
+            <div className="professional-header__actions">
+              <button 
+                className="button button-secondary"
+                onClick={() => refetch()}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Loading...' : 'Refresh Models'}
+              </button>
+            </div>
+          </div>
         </div>
-        <ModelList
-          models={models}
-          onDownload={handleModelDownload}
-          onDelete={handleModelDelete}
-          isDownloading={isDownloading}
-          downloadingModelId={downloadingModelId}
-        />
+        
+        {error && (
+          <div className="empty-state">
+            <div className="empty-state__icon">
+              {isRateLimitError(error) ? '⏱️' : '⚠️'}
+            </div>
+            <h3 className="empty-state__title">
+              {isRateLimitError(error) ? 'Rate Limit Exceeded' : 'Error Loading Models'}
+            </h3>
+            <p className="empty-state__description">
+              {isRateLimitError(error) 
+                ? getRateLimitMessage(error)
+                : (error instanceof Error ? error.message : 'Failed to load models')
+              }
+            </p>
+            <button 
+              className="button button-primary"
+              onClick={() => refetch()}
+              disabled={isRateLimitError(error)}
+            >
+              {isRateLimitError(error) ? 'Please Wait...' : 'Try Again'}
+            </button>
+          </div>
+        )}
+        
+        {isLoading && (
+          <div className="empty-state">
+            <div className="loading-spinner" style={{ margin: '0 auto' }}></div>
+            <h3 className="empty-state__title">Loading Models...</h3>
+            <p className="empty-state__description">
+              Fetching the latest machine learning models from the network
+            </p>
+          </div>
+        )}
+        
+        {!isLoading && !error && (
+          <ModelList
+            models={models}
+            onDownload={handleModelDownload}
+            onDelete={handleModelDelete}
+            isDownloading={downloadModelMutation.isPending}
+            downloadingModelId={downloadingModelId}
+          />
+        )}
       </div>
     </Layout>
   );

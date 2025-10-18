@@ -1,17 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '@calimero-network/mero-ui';
-import { AbiClient, ScanFile } from '../../api/AbiClient';
+import React, { useState } from 'react';
+import { AbiClient } from '../../api/AbiClient';
 import ScanList from '../../components/ScanList';
 import Layout from '../../components/Layout';
+import { useScans, useDownloadScan, useDeleteScan } from '../../hooks/useScans';
+import { isRateLimitError, getRateLimitMessage } from '../../utils/errorHandling';
 
 interface ScansPageProps {
   api: AbiClient;
 }
 
 export default function ScansPage({ api }: ScansPageProps) {
-  const [scans, setScans] = useState<ScanFile[]>([]);
-  const [isDownloading, setIsDownloading] = useState(false);
   const [downloadingScanId, setDownloadingScanId] = useState<string | null>(null);
+
+  // React Query hooks
+  const { data: scans = [], isLoading, error, refetch } = useScans(api);
+  const downloadScanMutation = useDownloadScan(api);
+  const deleteScanMutation = useDeleteScan(api);
 
   // Helper function to convert base64 string to binary blob
   const base64ToBlob = (
@@ -26,46 +30,14 @@ export default function ScansPage({ api }: ScansPageProps) {
     return new Blob([bytes], { type: mimeType });
   };
 
-  const loadScans = async () => {
-    try {
-      // For demo purposes, we'll load all scans
-      // In a real app, you might want to filter by patient or user
-      const allMetadata = await api.getAllMetadata();
-      const scanMetadata = allMetadata.filter((m) => m.file_type === 'scan');
-
-      const scanPromises = scanMetadata.map(async (metadata) => {
-        try {
-          const scan = await api.getScan({ scan_id: metadata.file_id });
-          return scan;
-        } catch (error) {
-          console.error(`Error loading scan ${metadata.file_id}:`, error);
-          return null;
-        }
-      });
-
-      const scanResults = await Promise.all(scanPromises);
-      const validScans = scanResults.filter(
-        (scan): scan is ScanFile => scan !== null,
-      );
-      setScans(validScans);
-    } catch (error) {
-      console.error('Error loading scans:', error);
-    }
-  };
-
-  useEffect(() => {
-    loadScans();
-  }, []);
-
   const handleScanDownload = async (scanId: string) => {
-    setIsDownloading(true);
     setDownloadingScanId(scanId);
     try {
       console.log('=== SCAN DOWNLOAD DEBUG ===');
       console.log('Downloading scan ID:', scanId);
 
-      const scan = await api.downloadScan({
-        scan_id: scanId,
+      const scan = await downloadScanMutation.mutateAsync({
+        scanId,
         downloader: 'current_user',
       });
 
@@ -102,7 +74,6 @@ export default function ScansPage({ api }: ScansPageProps) {
       console.error('Error downloading scan:', error);
       alert('Error downloading scan');
     } finally {
-      setIsDownloading(false);
       setDownloadingScanId(null);
     }
   };
@@ -110,8 +81,7 @@ export default function ScansPage({ api }: ScansPageProps) {
   const handleScanDelete = async (scanId: string) => {
     if (confirm('Are you sure you want to delete this scan?')) {
       try {
-        await api.deleteFile({ file_id: scanId, file_type: 'scan' });
-        await loadScans();
+        await deleteScanMutation.mutateAsync({ scanId });
       } catch (error) {
         console.error('Error deleting scan:', error);
         alert('Error deleting scan');
@@ -119,33 +89,73 @@ export default function ScansPage({ api }: ScansPageProps) {
     }
   };
 
-  const handleAddAnnotation = async (scanId: string, label: string) => {
-    try {
-      await api.addAnnotation({ scan_id: scanId, _label: label });
-      await loadScans();
-    } catch (error) {
-      console.error('Error adding annotation:', error);
-      alert('Error adding annotation');
-    }
-  };
 
   return (
     <Layout api={api}>
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-semibold">Medical Scans</h2>
-          <Button onClick={loadScans} variant="secondary">
-            Refresh
-          </Button>
+      <div className="calimero-container">
+        <div className="professional-header">
+          <div className="professional-header__content">
+            <div>
+              <h1 className="professional-header__title">Medical Scans</h1>
+              <p className="professional-header__subtitle">
+                Secure, peer-to-peer medical imaging data with full privacy protection and local storage
+              </p>
+            </div>
+            <div className="professional-header__actions">
+              <button 
+                className="button button-secondary"
+                onClick={() => refetch()}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Loading...' : 'Refresh Data'}
+              </button>
+            </div>
+          </div>
         </div>
-        <ScanList
-          scans={scans}
-          onDownload={handleScanDownload}
-          onDelete={handleScanDelete}
-          onAddAnnotation={handleAddAnnotation}
-          isDownloading={isDownloading}
-          downloadingScanId={downloadingScanId}
-        />
+        
+        {error && (
+          <div className="empty-state">
+            <div className="empty-state__icon">
+              {isRateLimitError(error) ? '⏱️' : '⚠️'}
+            </div>
+            <h3 className="empty-state__title">
+              {isRateLimitError(error) ? 'Rate Limit Exceeded' : 'Error Loading Scans'}
+            </h3>
+            <p className="empty-state__description">
+              {isRateLimitError(error) 
+                ? getRateLimitMessage(error)
+                : (error instanceof Error ? error.message : 'Failed to load medical scans')
+              }
+            </p>
+            <button 
+              className="button button-primary"
+              onClick={() => refetch()}
+              disabled={isRateLimitError(error)}
+            >
+              {isRateLimitError(error) ? 'Please Wait...' : 'Try Again'}
+            </button>
+          </div>
+        )}
+        
+        {isLoading && (
+          <div className="empty-state">
+            <div className="loading-spinner" style={{ margin: '0 auto' }}></div>
+            <h3 className="empty-state__title">Loading Medical Scans...</h3>
+            <p className="empty-state__description">
+              Fetching the latest medical imaging data from the network
+            </p>
+          </div>
+        )}
+        
+        {!isLoading && !error && (
+          <ScanList
+            scans={scans}
+            onDownload={handleScanDownload}
+            onDelete={handleScanDelete}
+            isDownloading={downloadScanMutation.isPending}
+            downloadingScanId={downloadingScanId}
+          />
+        )}
       </div>
     </Layout>
   );

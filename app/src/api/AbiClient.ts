@@ -21,7 +21,7 @@ export interface ModelFile {
   file_size: number;
   file_data: string;
   uploader: string;
-  created_at: number;
+  created_at: number | string | null | undefined;
   is_public: boolean;
 }
 
@@ -33,8 +33,7 @@ export interface ScanFile {
   file_size: number;
   file_data: string;
   uploader: string;
-  created_at: number;
-  annotation_count: number;
+  created_at: number | string | null | undefined;
 }
 
 export type AbiEvent =

@@ -1,12 +1,45 @@
+:root {
+  /* Calimero Design System Variables */
+  --spacing-xs: 0.25rem;
+  --spacing-s: 0.5rem;
+  --spacing-m: 1rem;
+  --spacing-l: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-xxl: 3rem;
+  
+  /* Colors */
+  --surface-action-default: #b5ff11;
+  --content-on-surface-action-default: #000000;
+  --surface-disabled: #4b5563;
+  --content-disabled: #9ca3af;
+  --border-brand: #b5ff11;
+  --content-brand: #b5ff11;
+  --border-disabled: #6b7280;
+  --border-low-contrast: rgba(255, 255, 255, 0.1);
+  
+  /* Background */
+  --background-primary: #000000;
+  --background-secondary: #111111;
+  --background-tertiary: #1a1a1a;
+  
+  /* Text */
+  --text-primary: #ffffff;
+  --text-secondary: #e5e7eb;
+  --text-muted: #9ca3af;
+  
+  /* Borders */
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --border-secondary: rgba(255, 255, 255, 0.05);
+}
+
 :root,
 html {
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: #ffffff;
-  background-color: #111111;
-
+  color-scheme: dark;
+  color: var(--text-primary);
+  background-color: var(--background-primary);
+  font-family: 'Power Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -17,7 +50,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Power Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-optical-sizing: auto;
   font-weight: 500;
   font-style: normal;
@@ -25,6 +58,961 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-smooth: never;
+}
+
+/* Calimero Button Styles */
+.button {
+  opacity: 0;
+  animation: fade-in 0.1s ease-in-out 0.4s forwards;
+  padding: var(--spacing-s) var(--spacing-l);
+  transition: background-color 0.3s ease-out, color 0.3s ease-out, box-shadow 0.3s ease-out;
+  width: fit-content;
+  text-align: center;
+  cursor: pointer;
+  font-family: 'Power Grotesk', Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.5;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 4px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-s);
+}
+
+@keyframes fade-in {
+  to {
+    opacity: 1;
+  }
+}
+
+@media screen and (width < 1024px) {
+  .button {
+    padding: 16px 24px;
+  }
+}
+
+.button-primary {
+  background-color: var(--surface-action-default);
+  color: var(--content-on-surface-action-default);
+}
+
+.button-primary:disabled {
+  background-color: var(--surface-disabled);
+  color: var(--content-disabled);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .button-primary:hover {
+    box-shadow: 0 0 20px #b5ff1180;
+  }
+}
+
+.button-secondary {
+  background-color: transparent;
+  border: 1px solid var(--border-brand);
+  color: var(--content-brand);
+  transition: color 0.3s, background-color 0.3s ease-out, box-shadow 0.3s ease-out;
+}
+
+.button-secondary:disabled {
+  border: 1px solid var(--border-disabled);
+  color: var(--content-disabled);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .button-secondary:hover {
+    color: var(--content-on-surface-action-default);
+    background-color: var(--content-brand);
+    box-shadow: 0 0 20px #b5ff1180;
+  }
+}
+
+/* Calimero Grid System */
+.grid-line {
+  position: absolute;
+  grid-column: 1/-1;
+  z-index: -2;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.grid-line__item {
+  width: 1px;
+  background-color: var(--border-low-contrast);
+}
+
+.grid-line__item:not(:first-child, :last-child) {
+  margin-right: 1.5px;
+}
+
+@media screen and (width < 1024px) {
+  .grid-line__item:not(:first-child, :last-child) {
+    margin-right: 0;
+  }
+}
+
+@media screen and (width < 1024px) {
+  .grid-line__item:nth-child(2n) {
+    display: none;
+  }
+}
+
+/* Calimero Layout Components */
+.calimero-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-l);
+  position: relative;
+}
+
+.calimero-hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  background: var(--background-primary);
+}
+
+.calimero-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(181, 255, 17, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(181, 255, 17, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.calimero-hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.calimero-hero h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: var(--spacing-l);
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.calimero-hero p {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin-bottom: var(--spacing-xxl);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.calimero-card {
+  background: var(--background-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+  padding: var(--spacing-xl);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.calimero-card:hover {
+  border-color: var(--border-brand);
+  box-shadow: 0 0 30px rgba(181, 255, 17, 0.1);
+}
+
+.calimero-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-l);
+  margin-top: var(--spacing-xl);
+}
+
+.calimero-stat-card {
+  background: var(--background-tertiary);
+  border: 1px solid var(--border-secondary);
+  border-radius: 8px;
+  padding: var(--spacing-l);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.calimero-stat-card:hover {
+  border-color: var(--border-brand);
+  transform: translateY(-2px);
+}
+
+.calimero-stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--surface-action-default);
+  margin-bottom: var(--spacing-s);
+}
+
+.calimero-stat-label {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Font Loading */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Power Grotesk fallback - using Inter as close alternative */
+@font-face {
+  font-family: 'Power Grotesk';
+  src: local('Inter'), local('Inter-Regular');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Power Grotesk';
+  src: local('Inter'), local('Inter-Medium');
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Power Grotesk';
+  src: local('Inter'), local('Inter-SemiBold');
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Power Grotesk';
+  src: local('Inter'), local('Inter-Bold');
+  font-weight: 700;
+  font-display: swap;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .calimero-hero h1 {
+    font-size: 2rem;
+  }
+  
+  .calimero-hero p {
+    font-size: 1rem;
+  }
+  
+  .calimero-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .calimero-container {
+    padding: 0 var(--spacing-m);
+  }
+}
+
+/* Enhanced animations */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.calimero-card {
+  animation: slideInUp 0.6s ease-out;
+}
+
+.calimero-stat-card {
+  animation: slideInUp 0.6s ease-out;
+  animation-delay: calc(var(--index, 0) * 0.1s);
+}
+
+/* Loading states */
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-secondary);
+  border-top: 3px solid var(--surface-action-default);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Calimero Navbar Styling */
+.calimero-navbar {
+  background: var(--background-primary) !important;
+  border-bottom: 1px solid var(--border-primary) !important;
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.calimero-navbar-brand {
+  font-family: 'Power Grotesk', Arial, Helvetica, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 1.25rem !important;
+  color: var(--surface-action-default) !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+  background-clip: unset !important;
+}
+
+.calimero-navbar-menu {
+  color: var(--text-muted) !important;
+}
+
+.calimero-navbar-menu .text {
+  color: var(--text-muted) !important;
+}
+
+.calimero-navbar-menu .text[data-color="muted"] {
+  color: var(--text-muted) !important;
+}
+
+.calimero-navbar-menu .text[style*="color: #e5e7eb"] {
+  color: var(--text-secondary) !important;
+}
+
+/* Override Mero UI navbar styles */
+[data-testid="navbar"] {
+  background: var(--background-primary) !important;
+  border-bottom: 1px solid var(--border-primary) !important;
+}
+
+[data-testid="navbar-brand"] {
+  color: var(--text-primary) !important;
+  font-family: 'Power Grotesk', Arial, Helvetica, sans-serif !important;
+  font-weight: 700 !important;
+}
+
+[data-testid="navbar-menu"] {
+  color: var(--text-muted) !important;
+}
+
+/* Additional navbar overrides */
+nav[role="navigation"] {
+  background: var(--background-primary) !important;
+  border-bottom: 1px solid var(--border-primary) !important;
+}
+
+nav[role="navigation"] * {
+  color: var(--text-muted) !important;
+}
+
+nav[role="navigation"] h1,
+nav[role="navigation"] h2,
+nav[role="navigation"] h3,
+nav[role="navigation"] h4,
+nav[role="navigation"] h5,
+nav[role="navigation"] h6 {
+  color: var(--text-primary) !important;
+  font-family: 'Power Grotesk', Arial, Helvetica, sans-serif !important;
+  font-weight: 700 !important;
+}
+
+/* Ensure all navbar text uses Calimero colors */
+.calimero-navbar * {
+  color: var(--text-muted) !important;
+}
+
+.calimero-navbar-brand {
+  color: var(--surface-action-default) !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+  background-clip: unset !important;
+}
+
+.calimero-navbar h1,
+.calimero-navbar h2,
+.calimero-navbar h3,
+.calimero-navbar h4,
+.calimero-navbar h5,
+.calimero-navbar h6 {
+  color: var(--text-primary) !important;
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--surface-action-default) 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+/* CalimeroConnectButton Styling */
+.calimero-connect-button,
+[data-testid="calimero-connect-button"],
+button[class*="connect"],
+button[class*="Connect"] {
+  background-color: var(--surface-action-default) !important;
+  color: var(--content-on-surface-action-default) !important;
+  border: none !important;
+  border-radius: 4px !important;
+  padding: var(--spacing-s) var(--spacing-l) !important;
+  font-family: 'Power Grotesk', Arial, Helvetica, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0.17em !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  transition: background-color 0.3s ease-out, color 0.3s ease-out, box-shadow 0.3s ease-out !important;
+  opacity: 0;
+  animation: fade-in 0.1s ease-in-out 0.4s forwards !important;
+}
+
+.calimero-connect-button:hover,
+[data-testid="calimero-connect-button"]:hover,
+button[class*="connect"]:hover,
+button[class*="Connect"]:hover {
+  box-shadow: 0 0 20px #b5ff1180 !important;
+}
+
+/* Override any orange colors in connect button */
+.calimero-connect-button *,
+[data-testid="calimero-connect-button"] *,
+button[class*="connect"] *,
+button[class*="Connect"] * {
+  color: var(--content-on-surface-action-default) !important;
+  background-color: transparent !important;
+}
+
+/* Specific overrides for Calimero UI components */
+[data-testid*="button"],
+[data-testid*="Button"] {
+  background-color: var(--surface-action-default) !important;
+  color: var(--content-on-surface-action-default) !important;
+  border: none !important;
+}
+
+[data-testid*="button"]:hover,
+[data-testid*="Button"]:hover {
+  box-shadow: 0 0 20px #b5ff1180 !important;
+}
+
+/* Override any orange/red colors */
+button[style*="orange"],
+button[style*="#f59e0b"],
+button[style*="#f97316"],
+button[style*="#ea580c"],
+button[style*="rgb(245, 158, 11)"],
+button[style*="rgb(249, 115, 22)"],
+button[style*="rgb(234, 88, 12)"] {
+  background-color: var(--surface-action-default) !important;
+  color: var(--content-on-surface-action-default) !important;
+}
+
+/* Additional CalimeroConnectButton overrides */
+.calimero-connect-button button,
+.calimero-connect-button [role="button"],
+.calimero-connect-button div[role="button"] {
+  background-color: var(--surface-action-default) !important;
+  color: var(--content-on-surface-action-default) !important;
+  border: none !important;
+  border-radius: 4px !important;
+  padding: var(--spacing-s) var(--spacing-l) !important;
+  font-family: 'Power Grotesk', Arial, Helvetica, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0.17em !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease-out !important;
+  opacity: 0;
+  animation: fade-in 0.1s ease-in-out 0.4s forwards !important;
+}
+
+.calimero-connect-button button:hover,
+.calimero-connect-button [role="button"]:hover,
+.calimero-connect-button div[role="button"]:hover {
+  box-shadow: 0 0 20px #b5ff1180 !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Override any inline styles that might be orange */
+.calimero-connect-button *[style*="background"],
+.calimero-connect-button *[style*="color"] {
+  background-color: var(--surface-action-default) !important;
+  color: var(--content-on-surface-action-default) !important;
+}
+
+/* Navbar Button Styling - More Specific Overrides */
+.calimero-navbar .calimero-connect-button,
+.calimero-navbar .calimero-connect-button *,
+.calimero-navbar .calimero-connect-button button,
+.calimero-navbar .calimero-connect-button div,
+.calimero-navbar .calimero-connect-button span,
+.calimero-navbar [data-testid="calimero-connect-button"],
+.calimero-navbar [data-testid="calimero-connect-button"] *,
+.calimero-navbar button[class*="connect"],
+.calimero-navbar button[class*="Connect"],
+.calimero-navbar div[class*="connect"],
+.calimero-navbar div[class*="Connect"] {
+  background-color: var(--surface-action-default) !important;
+  background: var(--surface-action-default) !important;
+  color: var(--content-on-surface-action-default) !important;
+  border: none !important;
+  border-radius: 4px !important;
+  padding: var(--spacing-s) var(--spacing-l) !important;
+  font-family: 'Power Grotesk', Arial, Helvetica, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 0.875rem !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0.17em !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease-out !important;
+  opacity: 0;
+  animation: fade-in 0.1s ease-in-out 0.4s forwards !important;
+}
+
+.calimero-navbar .calimero-connect-button:hover,
+.calimero-navbar [data-testid="calimero-connect-button"]:hover,
+.calimero-navbar button[class*="connect"]:hover,
+.calimero-navbar button[class*="Connect"]:hover {
+  box-shadow: 0 0 20px #b5ff1180 !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Logout Button Styling */
+.calimero-navbar [data-testid*="menu"],
+.calimero-navbar [data-testid*="Menu"],
+.calimero-navbar [role="menu"],
+.calimero-navbar [role="menuitem"] {
+  background: var(--background-secondary) !important;
+  border: 1px solid var(--border-primary) !important;
+  border-radius: 8px !important;
+  color: var(--text-primary) !important;
+}
+
+.calimero-navbar [data-testid*="menu-item"],
+.calimero-navbar [role="menuitem"],
+.calimero-navbar button[role="menuitem"] {
+  background: transparent !important;
+  color: var(--text-primary) !important;
+  border: none !important;
+  padding: var(--spacing-s) var(--spacing-l) !important;
+  font-family: 'Power Grotesk', Arial, Helvetica, sans-serif !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease-out !important;
+  border-radius: 4px !important;
+}
+
+.calimero-navbar [data-testid*="menu-item"]:hover,
+.calimero-navbar [role="menuitem"]:hover,
+.calimero-navbar button[role="menuitem"]:hover {
+  background: var(--background-tertiary) !important;
+  color: var(--surface-action-default) !important;
+}
+
+/* Override Mero UI Menu components */
+.calimero-navbar [data-testid*="menu"] *,
+.calimero-navbar [data-testid*="Menu"] * {
+  color: var(--text-primary) !important;
+}
+
+.calimero-navbar [data-testid*="menu-item"] *,
+.calimero-navbar [data-testid*="MenuItem"] * {
+  color: inherit !important;
+}
+
+/* Ultra-specific overrides for CalimeroConnectButton in navbar */
+.calimero-navbar .calimero-connect-button button[style*="background"],
+.calimero-navbar .calimero-connect-button div[style*="background"],
+.calimero-navbar .calimero-connect-button span[style*="background"],
+.calimero-navbar .calimero-connect-button *[style*="background-color"],
+.calimero-navbar .calimero-connect-button *[style*="background"] {
+  background-color: var(--surface-action-default) !important;
+  background: var(--surface-action-default) !important;
+}
+
+.calimero-navbar .calimero-connect-button button[style*="color"],
+.calimero-navbar .calimero-connect-button div[style*="color"],
+.calimero-navbar .calimero-connect-button span[style*="color"],
+.calimero-navbar .calimero-connect-button *[style*="color"] {
+  color: var(--content-on-surface-action-default) !important;
+}
+
+/* Force override any orange colors specifically */
+.calimero-navbar *[style*="orange"],
+.calimero-navbar *[style*="#f59e0b"],
+.calimero-navbar *[style*="#f97316"],
+.calimero-navbar *[style*="#ea580c"],
+.calimero-navbar *[style*="rgb(245, 158, 11)"],
+.calimero-navbar *[style*="rgb(249, 115, 22)"],
+.calimero-navbar *[style*="rgb(234, 88, 12)"] {
+  background-color: var(--surface-action-default) !important;
+  background: var(--surface-action-default) !important;
+  color: var(--content-on-surface-action-default) !important;
+}
+
+/* But preserve navbar background and other elements */
+.calimero-navbar {
+  background: var(--background-primary) !important;
+}
+
+.calimero-navbar .calimero-navbar-brand,
+.calimero-navbar .calimero-navbar-menu,
+.calimero-navbar .calimero-navbar-menu * {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Target connect button specifically with maximum specificity */
+.calimero-navbar .calimero-connect-button,
+.calimero-navbar .calimero-connect-button > *,
+.calimero-navbar .calimero-connect-button > * > *,
+.calimero-navbar .calimero-connect-button > * > * > * {
+  background-color: var(--surface-action-default) !important;
+  background: var(--surface-action-default) !important;
+  color: var(--content-on-surface-action-default) !important;
+}
+
+/* Force navbar connect button to match login page styling */
+.calimero-navbar .calimero-connect-button button,
+.calimero-navbar .calimero-connect-button div,
+.calimero-navbar .calimero-connect-button span,
+.calimero-navbar .calimero-connect-button [role="button"] {
+  background-color: var(--surface-action-default) !important;
+  background: var(--surface-action-default) !important;
+  color: var(--content-on-surface-action-default) !important;
+  border: none !important;
+  border-radius: 4px !important;
+  padding: var(--spacing-s) var(--spacing-l) !important;
+  font-family: 'Power Grotesk', Arial, Helvetica, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 0.875rem !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0.17em !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease-out !important;
+  opacity: 0;
+  animation: fade-in 0.1s ease-in-out 0.4s forwards !important;
+}
+
+.calimero-navbar .calimero-connect-button button:hover,
+.calimero-navbar .calimero-connect-button div:hover,
+.calimero-navbar .calimero-connect-button span:hover,
+.calimero-navbar .calimero-connect-button [role="button"]:hover {
+  box-shadow: 0 0 20px #b5ff1180 !important;
+  transform: translateY(-1px) !important;
+}
+
+/* ULTRA-AGGRESSIVE OVERRIDES - Maximum Specificity */
+html body .calimero-navbar .calimero-connect-button,
+html body .calimero-navbar .calimero-connect-button *,
+html body .calimero-navbar .calimero-connect-button button,
+html body .calimero-navbar .calimero-connect-button div,
+html body .calimero-navbar .calimero-connect-button span,
+html body .calimero-navbar .calimero-connect-button [role="button"],
+html body .calimero-navbar .calimero-connect-button [data-testid*="button"],
+html body .calimero-navbar .calimero-connect-button [data-testid*="Button"] {
+  background-color: #b5ff11 !important;
+  background: #b5ff11 !important;
+  background-image: none !important;
+  color: #000000 !important;
+  border: none !important;
+  border-radius: 4px !important;
+  padding: 8px 24px !important;
+  font-family: 'Power Grotesk', Arial, Helvetica, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 0.875rem !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0.17em !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease-out !important;
+  opacity: 0;
+  animation: fade-in 0.1s ease-in-out 0.4s forwards !important;
+}
+
+html body .calimero-navbar .calimero-connect-button:hover,
+html body .calimero-navbar .calimero-connect-button *:hover,
+html body .calimero-navbar .calimero-connect-button button:hover,
+html body .calimero-navbar .calimero-connect-button div:hover,
+html body .calimero-navbar .calimero-connect-button span:hover,
+html body .calimero-navbar .calimero-connect-button [role="button"]:hover {
+  box-shadow: 0 0 20px rgba(181, 255, 17, 0.5) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Override any possible orange colors with maximum specificity */
+html body .calimero-navbar .calimero-connect-button *[style*="orange"],
+html body .calimero-navbar .calimero-connect-button *[style*="#f59e0b"],
+html body .calimero-navbar .calimero-connect-button *[style*="#f97316"],
+html body .calimero-navbar .calimero-connect-button *[style*="#ea580c"],
+html body .calimero-navbar .calimero-connect-button *[style*="rgb(245, 158, 11)"],
+html body .calimero-navbar .calimero-connect-button *[style*="rgb(249, 115, 22)"],
+html body .calimero-navbar .calimero-connect-button *[style*="rgb(234, 88, 12)"] {
+  background-color: #b5ff11 !important;
+  background: #b5ff11 !important;
+  color: #000000 !important;
+}
+
+/* Horizontal Card Background - Enterprise Level */
+.horizontal-card__background {
+  background: var(--background-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-l);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.horizontal-card__background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(181, 255, 17, 0.02) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.horizontal-card__background:hover {
+  border-color: var(--border-brand);
+  box-shadow: 0 0 30px rgba(181, 255, 17, 0.1);
+  transform: translateY(-2px);
+}
+
+.horizontal-card__content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xl);
+  position: relative;
+  z-index: 1;
+}
+
+.horizontal-card__icon {
+  width: 60px;
+  height: 60px;
+  background: var(--background-tertiary);
+  border: 2px solid var(--border-brand);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--surface-action-default);
+  font-size: 1.5rem;
+}
+
+.horizontal-card__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.horizontal-card__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-s);
+  font-family: 'Power Grotesk', Arial, Helvetica, sans-serif;
+}
+
+.horizontal-card__description {
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: var(--spacing-m);
+}
+
+.horizontal-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-s);
+  margin-bottom: var(--spacing-m);
+}
+
+.horizontal-card__badge {
+  background: var(--background-tertiary);
+  border: 1px solid var(--border-secondary);
+  border-radius: 6px;
+  padding: var(--spacing-xs) var(--spacing-s);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.horizontal-card__badge--primary {
+  background: var(--surface-action-default);
+  color: var(--content-on-surface-action-default);
+  border-color: var(--surface-action-default);
+}
+
+.horizontal-card__badge--secondary {
+  background: var(--background-tertiary);
+  color: var(--surface-action-default);
+  border-color: var(--border-brand);
+}
+
+.horizontal-card__actions {
+  display: flex;
+  gap: var(--spacing-s);
+  flex-wrap: wrap;
+}
+
+.horizontal-card__stats {
+  display: flex;
+  gap: var(--spacing-l);
+  margin-top: var(--spacing-m);
+  padding-top: var(--spacing-m);
+  border-top: 1px solid var(--border-secondary);
+}
+
+.horizontal-card__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.horizontal-card__stat-value {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--surface-action-default);
+  margin-bottom: var(--spacing-xs);
+}
+
+.horizontal-card__stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Professional Page Header */
+.professional-header {
+  background: var(--background-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+  position: relative;
+  overflow: hidden;
+}
+
+.professional-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(181, 255, 17, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.professional-header__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-l);
+}
+
+.professional-header__title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  font-family: 'Power Grotesk', Arial, Helvetica, sans-serif;
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--surface-action-default) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.professional-header__subtitle {
+  color: var(--text-muted);
+  margin-top: var(--spacing-s);
+  font-size: 1rem;
+}
+
+.professional-header__actions {
+  display: flex;
+  gap: var(--spacing-s);
+  align-items: center;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-xxl);
+  background: var(--background-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+  color: var(--text-muted);
+}
+
+.empty-state__icon {
+  font-size: 3rem;
+  color: var(--surface-action-default);
+  margin-bottom: var(--spacing-l);
+}
+
+.empty-state__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-s);
+}
+
+.empty-state__description {
+  color: var(--text-muted);
+  margin-bottom: var(--spacing-l);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .horizontal-card__content {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--spacing-l);
+  }
+  
+  .horizontal-card__actions {
+    justify-content: center;
+  }
+  
+  .horizontal-card__stats {
+    justify-content: center;
+  }
+  
+  .professional-header__content {
+    flex-direction: column;
+    text-align: center;
+  }
 }
 
 * {
@@ -108,4 +1096,321 @@ body {
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   transform: translateY(-1px);
+}
+
+/* Loading spinner */
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-default);
+  border-top: 3px solid var(--surface-action-default);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto var(--spacing-m);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Rate limit specific styling */
+.empty-state[data-rate-limit="true"] {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.05);
+}
+
+.empty-state[data-rate-limit="true"] .empty-state__icon {
+  color: #f59e0b;
+}
+
+.empty-state[data-rate-limit="true"] .empty-state__title {
+  color: #f59e0b;
+}
+
+/* Upload Form Styling */
+.upload-form-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--spacing-l) 0;
+}
+
+.upload-form-container--wide {
+  max-width: 1200px;
+}
+
+.upload-form {
+  background: var(--background-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--border-radius-l);
+  padding: var(--spacing-xxl);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.form-section {
+  margin-bottom: var(--spacing-xxl);
+  padding: var(--spacing-xl);
+  background: var(--background-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--border-radius-m);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-section:last-child {
+  margin-bottom: 0;
+}
+
+.form-section--submit {
+  text-align: center;
+  padding-top: var(--spacing-l);
+}
+
+.form-section__title {
+  font-family: 'Power Grotesk', Arial, Helvetica, sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--content-on-surface-default);
+  margin-bottom: var(--spacing-s);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-s);
+}
+
+.form-section__description {
+  color: var(--content-on-surface-secondary);
+  margin-bottom: var(--spacing-l);
+  line-height: 1.6;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-l);
+}
+
+.form-field {
+  margin-bottom: var(--spacing-l);
+}
+
+.form-label {
+  display: block;
+  font-family: 'Power Grotesk', Arial, Helvetica, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--content-on-surface-default);
+  margin-bottom: var(--spacing-s);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+  padding: var(--spacing-m) var(--spacing-l);
+  border: 2px solid var(--surface-action-default);
+  border-radius: var(--border-radius-s);
+  background: var(--background-primary);
+  color: var(--content-on-surface-default);
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
+  font-size: 1rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--surface-action-default);
+  box-shadow: 0 0 0 3px rgba(181, 255, 17, 0.1);
+  transform: translateY(-1px);
+  background: var(--background-primary);
+  color: var(--content-on-surface-default);
+}
+
+.form-input--file {
+  padding: var(--spacing-l);
+  border: 2px dashed var(--surface-action-default);
+  background: var(--background-primary);
+  color: var(--content-on-surface-default);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.form-input--file:hover {
+  border-color: var(--surface-action-default);
+  background: var(--background-primary);
+  box-shadow: 0 0 0 3px rgba(181, 255, 17, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-select {
+  cursor: pointer;
+}
+
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-s);
+}
+
+.form-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--surface-action-default);
+  border-radius: var(--border-radius-s);
+  background: var(--background-primary);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.form-checkbox:checked {
+  background: var(--surface-action-default);
+  border-color: var(--surface-action-default);
+}
+
+.form-checkbox:checked::after {
+  content: '✓';
+  display: block;
+  color: var(--content-on-surface-action-default);
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 16px;
+}
+
+.form-label--checkbox {
+  margin-bottom: 0;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.form-error {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-top: var(--spacing-s);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-s);
+}
+
+.form-error--global {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--border-radius-s);
+  padding: var(--spacing-m);
+  margin-top: var(--spacing-l);
+}
+
+.file-info {
+  margin-top: var(--spacing-s);
+  padding: var(--spacing-m);
+  background: var(--background-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--border-radius-s);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.file-info__name {
+  font-weight: 600;
+  color: var(--content-on-surface-default);
+  margin-bottom: var(--spacing-xs);
+}
+
+.file-info__size {
+  font-size: 0.875rem;
+  color: var(--content-on-surface-secondary);
+}
+
+.file-info__size--error {
+  color: #ef4444;
+}
+
+.file-info__warning {
+  font-weight: 600;
+  color: #f59e0b;
+}
+
+.button--large {
+  padding: var(--spacing-l) var(--spacing-xxl);
+  font-size: 1.125rem;
+  min-width: 200px;
+}
+
+/* Two-column form layout */
+.upload-form--two-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xxl);
+  align-items: start;
+}
+
+.form-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+.form-column .form-section {
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-xl);
+  background: var(--background-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--border-radius-m);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-column .form-section:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive form */
+@media (max-width: 1024px) {
+  .form-columns {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xl);
+  }
+  
+  .form-column .form-section {
+    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-xl);
+    background: var(--background-secondary);
+    border: 1px solid var(--border-default);
+    border-radius: var(--border-radius-m);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-column .form-section:last-child {
+    margin-bottom: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .upload-form {
+    padding: var(--spacing-l);
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-m);
+  }
+  
+  .form-section {
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-l);
+  }
+  
+  .upload-form-container--wide {
+    max-width: 100%;
+    padding: var(--spacing-m) 0;
+  }
 }

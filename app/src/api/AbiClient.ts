@@ -143,8 +143,8 @@ export class AbiClient {
   /**
    * upload_current_model
    */
-  public async uploadCurrentModel(params: { name: string; description: string; model_type: string; version: string; file_bytes: CalimeroBytes; uploader: string; prediction_accuracy: number; date: number; model_params: string; is_public: boolean }): Promise<string> {
-    const response = await this.app.execute(this.context, 'upload_current_model', convertCalimeroBytesForWasm(params));
+  public async uploadCurrentModel(params: { name: string; description: string; model_type: string; version: string; file_bytes_base64: string; uploader: string; prediction_accuracy: number; date: number; model_params: string; is_public: boolean }): Promise<string> {
+    const response = await this.app.execute(this.context, 'upload_current_model', params);
     if (response.success) {
       return response.result as string;
     } else {

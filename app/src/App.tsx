@@ -14,6 +14,7 @@ import ModelsPage from './pages/models';
 import ScansPage from './pages/scans';
 import UploadModelPage from './pages/upload-model';
 import UploadScanPage from './pages/upload-scan';
+import ModelSummaryPage from './pages/model-summary';
 import { AbiClient } from './api/AbiClient';
 
 function AppContent() {
@@ -221,6 +222,16 @@ function AppContent() {
         element={
           <ProtectedRoute>
             <UploadScanPage api={api!} />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Model Summary route */}
+      <Route
+        path="/model-summary"
+        element={
+          <ProtectedRoute>
+            <ModelSummaryPage api={api!} />
           </ProtectedRoute>
         }
       />

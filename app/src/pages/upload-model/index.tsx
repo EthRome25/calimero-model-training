@@ -79,7 +79,7 @@ export default function UploadModelPage({ api }: UploadModelPageProps) {
                 <div className="form-section">
                   <h3 className="form-section__title">🤖 ML Model File</h3>
                   <p className="form-section__description">
-                    Upload your machine learning model file. Maximum size: 40KB for optimal performance.
+                    Upload your machine learning model file. Maximum size: 40KB.
                   </p>
                   
                   <form.Field

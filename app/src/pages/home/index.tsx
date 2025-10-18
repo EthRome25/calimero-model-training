@@ -1,10 +1,4 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from '@calimero-network/mero-ui';
 import { useNavigate } from 'react-router-dom';
 import { useCalimero } from '@calimero-network/calimero-client';
 import { AbiClient } from '../../api/AbiClient';

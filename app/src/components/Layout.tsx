@@ -1,11 +1,9 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
-  Button,
   Navbar as MeroNavbar,
   NavbarBrand,
   NavbarMenu,
   NavbarItem,
-  useToast,
   CopyToClipboard,
   Text,
   Badge,
@@ -28,7 +26,6 @@ export default function Layout({ children, api }: LayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, logout, app, appUrl } = useCalimero();
-  const { show } = useToast();
   const [stats, setStats] = useState<any>(null);
   const [currentContext, setCurrentContext] = useState<{
     applicationId: string;
@@ -93,6 +90,7 @@ export default function Layout({ children, api }: LayoutProps) {
     if (path === '/scans') return 'scans';
     if (path === '/upload-model') return 'upload-model';
     if (path === '/upload-scan') return 'upload-scan';
+    if (path === '/model-summary') return 'model-summary';
     return 'home';
   };
 
@@ -305,28 +303,16 @@ export default function Layout({ children, api }: LayoutProps) {
                 Home
               </button>
               <button
-                onClick={() => navigate('/models')}
-                className={`button ${currentRoute === 'models' ? 'button-primary' : 'button-secondary'}`}
-              >
-                ML Models
-              </button>
-              <button
-                onClick={() => navigate('/scans')}
-                className={`button ${currentRoute === 'scans' ? 'button-primary' : 'button-secondary'}`}
-              >
-                Medical Scans
-              </button>
-              <button
-                onClick={() => navigate('/upload-model')}
-                className={`button ${currentRoute === 'upload-model' ? 'button-primary' : 'button-secondary'}`}
-              >
-                Upload Model
-              </button>
-              <button
                 onClick={() => navigate('/upload-scan')}
                 className={`button ${currentRoute === 'upload-scan' ? 'button-primary' : 'button-secondary'}`}
               >
                 Upload Scan
+              </button>
+              <button
+                onClick={() => navigate('/model-summary')}
+                className={`button ${currentRoute === 'model-summary' ? 'button-primary' : 'button-secondary'}`}
+              >
+                Model Summary
               </button>
             </div>
 

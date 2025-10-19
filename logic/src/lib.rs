@@ -28,7 +28,7 @@ pub struct Model {
     pub uploader: String,
     pub created_at: u64,
     pub is_public: bool,
-    pub prediction_accuracy: u8,
+    pub prediction_accuracy: f32,
     pub model_params: String,
     // Optional metadata associated with the current model
     // pub current_model_metadata: Option<ModelMetadata>
@@ -62,6 +62,7 @@ impl AppState {
         model_type: String,
         version: String,
         // Raw model bytes; will be stored as Base64 inside ModelFile to keep structure backward-compatible
+        //@TODO (Warning) Currently calimero is limited with the max message size
         file_bytes_base64: String,
         uploader: String,
         // Metadata
@@ -88,8 +89,7 @@ impl AppState {
             uploader,
             created_at,
             is_public,
-            // current_model_metadata: None,
-            prediction_accuracy: 0,
+            prediction_accuracy,
             model_params,
         };
 

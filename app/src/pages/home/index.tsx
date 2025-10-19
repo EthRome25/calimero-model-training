@@ -53,15 +53,15 @@ export default function HomePage({ api }: HomePageProps) {
           >
             <button
               className="button button-primary"
-              onClick={() => navigate('/upload-model')}
+              onClick={() => navigate('/model-summary')}
             >
-              🧠 Upload AI Model
+              🧠 View Model Details
             </button>
             <button
               className="button button-secondary"
-              onClick={() => navigate('/upload-scan')}
+              onClick={() => navigate('/predicting')}
             >
-              🏥 Upload Medical Scan
+              🏥 Model prediction
             </button>
           </div>
         </div>

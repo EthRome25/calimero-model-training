@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCalimero } from '@calimero-network/calimero-client';
 import { AbiClient } from '../../api/AbiClient';
@@ -34,12 +34,13 @@ export default function HomePage({ api }: HomePageProps) {
     <Layout api={api}>
       <div className="calimero-hero">
         <div className="calimero-hero-content">
-          <h1>Medical AI Training Platform</h1>
+          <h1>
+            MediNet - Privacy-First Federated Learning for Medical Imaging
+          </h1>
           <p>
-            Securely train, deploy, and share medical AI models with
-            privacy-preserving peer-to-peer technology. Upload medical scans and
-            ML models while maintaining complete data ownership and HIPAA
-            compliance.
+            Train AI models on CT/MRI data without sharing patient data. Built
+            on Calimero private shards, MediNet securely aggregates encrypted
+            model updates so hospitals collaborate while data stays on‑prem.
           </p>
           <div
             style={{
@@ -84,7 +85,7 @@ export default function HomePage({ api }: HomePageProps) {
                 color: 'var(--text-primary)',
               }}
             >
-              Medical AI Platform Statistics
+              MediNet Platform Statistics
             </h2>
             <div className="calimero-stats-grid">
               <div className="calimero-stat-card">

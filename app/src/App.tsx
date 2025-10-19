@@ -54,7 +54,7 @@ function AppContent() {
             // Try to find the specific context from environment variables
             const targetContextId = import.meta.env.VITE_CONTEXT_ID;
             let context = contexts[0]; // fallback to first context
-            
+
             if (targetContextId) {
               const foundContext = contexts.find(ctx => ctx.contextId === targetContextId);
               if (foundContext) {
@@ -66,7 +66,7 @@ function AppContent() {
             } else {
               console.log('Using first available context:', context);
             }
-            
+
             const abiClient = new AbiClient(app, context);
             setApi(abiClient);
             setLoading(false);
@@ -131,7 +131,7 @@ function AppContent() {
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <h2 className="text-xl font-semibold mb-2">
-              Loading Medical AI File Transfer...
+              Loading MediNet...
             </h2>
             <p className="text-gray-600">Connecting to Calimero network</p>
             <div className="mt-4">

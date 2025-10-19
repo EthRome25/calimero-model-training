@@ -24,9 +24,9 @@ function ModelSummaryContent({ api }: ModelSummaryPageProps) {
       // Force refresh by invalidating cache first
       const modelName = await refetchModelName();
       if (modelName.data) {
-        alert(`Obecny model: ${modelName.data}`);
+        alert(`Current model: ${modelName.data}`);
       } else {
-        alert('Nie udało się pobrać nazwy modelu');
+        alert('Not able to fetch model name');
       }
     } catch (error) {
       console.error('Error fetching model name:', error);

@@ -92,7 +92,7 @@ export default function Layout({ children, api }: LayoutProps) {
     <>
       <MeroNavbar variant="elevated" size="md" className="calimero-navbar">
         <NavbarBrand
-          text="Medical AI File Transfer"
+          text="MediNet"
           className="calimero-navbar-brand"
         />
         <NavbarMenu align="center" className="calimero-navbar-menu">
@@ -263,7 +263,7 @@ export default function Layout({ children, api }: LayoutProps) {
                   backgroundClip: 'text',
                 }}
               >
-                Medical AI File Transfer
+                MediNet - Privacy-First Federated Learning for Medical Imaging
               </h1>
               {stats && (
                 <Badge

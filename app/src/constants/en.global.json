@@ -1,7 +1,7 @@
 {
   "home": {
-    "welcome": "Welcome to the Medical AI Training Platform!",
-    "demoDescription": "A powerful medical AI training platform built on Calimero's P2P network. Securely train, deploy, and share medical AI models with privacy-preserving technology.",
+    "welcome": "Welcome to MediNet",
+    "demoDescription": "Privacy-first federated learning for medical imaging on Calimero private shards. Train AI models collaboratively without sharing patient data.",
     "calimeroIntro": "Calimero is a privacy-focused blockchain network that enables developers to build scalable, private applications. Our platform provides the infrastructure for creating decentralized applications with enhanced privacy and performance.",
     "learnMore": "Learn more about Calimero:",
     "documentation": "Documentation",
@@ -23,17 +23,17 @@
     }
   },
   "auth": {
-    "title": "Medical AI Platform",
+    "title": "MediNet",
     "back": "Back",
     "goToContext": "Go to context actions",
     "description": {
-      "title": "Welcome to the Medical AI Training Platform",
-      "subtitle": "A privacy-preserving medical AI training platform",
+      "title": "Welcome to MediNet",
+      "subtitle": "Privacy-first federated learning for medical imaging",
       "features": [
-        "Upload and train medical AI models on the Calimero P2P network",
-        "Secure medical scan storage with HIPAA compliance",
-        "Privacy-preserving model training and deployment",
-        "Peer-to-peer medical data sharing with full ownership"
+        "Collaborate on AI model training without sharing raw patient data",
+        "Secure aggregation on Calimero private shards",
+        "HIPAA/GDPR-aligned, on‑prem data retention",
+        "Distribute improved global models back to participants"
       ],
       "getStarted": "Connect your wallet to get started"
     }

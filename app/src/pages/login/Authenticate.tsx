@@ -27,7 +27,7 @@ export default function Authenticate() {
   return (
     <>
       <MeroNavbar variant="elevated" size="md" className="calimero-navbar">
-        <NavbarBrand text="Medical AI Training Platform" className="calimero-navbar-brand" />
+        <NavbarBrand text="MediNet — Privacy-First Federated Learning for Medical Imaging" className="calimero-navbar-brand" />
         <NavbarMenu align="right">
           <NavbarItem>
             <CalimeroConnectButton
@@ -65,13 +65,13 @@ export default function Authenticate() {
 
         <div className="calimero-hero">
           <div className="calimero-hero-content">
-            <h1>Medical AI Training Platform</h1>
+            <h1>MediNet - Privacy-First Federated Learning for Medical Imaging</h1>
             <p>
-              Connect to the Calimero network to access secure, privacy-preserving medical AI training. 
-              Train, deploy, and share medical AI models while maintaining complete data ownership and HIPAA compliance.
+              Connect to MediNet on Calimero to collaborate on AI model training without sharing patient data.
+              Authenticate to join a private shard and start privacy‑preserving training where data stays on‑prem.
             </p>
-            
-            <div className="calimero-card" style={{ 
+
+            <div className="calimero-card" style={{
               marginTop: 'var(--spacing-xxl)',
               maxWidth: '600px',
               marginLeft: 'auto',
@@ -95,8 +95,8 @@ export default function Authenticate() {
                 </p>
               </div>
 
-              <div style={{ 
-                display: 'flex', 
+              <div style={{
+                display: 'flex',
                 justifyContent: 'center',
                 marginBottom: 'var(--spacing-xl)'
               }}>

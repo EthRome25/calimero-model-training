@@ -65,11 +65,8 @@ export default function Authenticate() {
 
         <div className="calimero-hero">
           <div className="calimero-hero-content">
-            <h1>MediNet - Privacy-First Federated Learning for Medical Imaging</h1>
-            <p>
-              Connect to MediNet on Calimero to collaborate on AI model training without sharing patient data.
-              Authenticate to join a private shard and start privacy‑preserving training where data stays on‑prem.
-            </p>
+            <h1>MediNet</h1>
+            
 
             <div className="calimero-card" style={{
               marginTop: 'var(--spacing-xxl)',
@@ -78,21 +75,8 @@ export default function Authenticate() {
               marginRight: 'auto'
             }}>
               <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-xl)' }}>
-                <h2 style={{
-                  fontSize: '1.5rem',
-                  fontWeight: '700',
-                  color: 'var(--text-primary)',
-                  marginBottom: 'var(--spacing-l)'
-                }}>
-                  {translations.auth.description.subtitle}
-                </h2>
-                <p style={{
-                  color: 'var(--text-muted)',
-                  lineHeight: '1.6',
-                  marginBottom: 'var(--spacing-l)'
-                }}>
-                  {translations.home.demoDescription}
-                </p>
+           
+
               </div>
 
               <div style={{
@@ -110,48 +94,6 @@ export default function Authenticate() {
                 </div>
               </div>
 
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                gap: 'var(--spacing-s)',
-                marginBottom: 'var(--spacing-xl)'
-              }}>
-                {translations.auth.description.features.map((feature, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      background: 'var(--background-tertiary)',
-                      border: '1px solid var(--border-secondary)',
-                      borderRadius: '6px',
-                      padding: 'var(--spacing-s)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 'var(--spacing-s)',
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: '6px',
-                        height: '6px',
-                        borderRadius: '50%',
-                        background: 'var(--surface-action-default)',
-                        flexShrink: 0,
-                      }}
-                    />
-                    <span
-                      style={{
-                        color: 'var(--text-secondary)',
-                        fontSize: '0.875rem',
-                        lineHeight: '1.4',
-                        fontWeight: '500',
-                      }}
-                    >
-                      {feature}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
               <div
                 style={{
                   display: 'flex',
@@ -164,23 +106,12 @@ export default function Authenticate() {
                   border: '1px solid var(--border-secondary)',
                 }}
               >
-                <button
+            
+            <button
                   className="button button-secondary"
                   onClick={() =>
                     window.open(
-                      'https://docs.calimero.network',
-                      '_blank',
-                      'noopener,noreferrer',
-                    )
-                  }
-                >
-                  📚 {translations.home.documentation}
-                </button>
-                <button
-                  className="button button-secondary"
-                  onClick={() =>
-                    window.open(
-                      'https://github.com/calimero-network',
+                      'https://github.com/EthRome25',
                       '_blank',
                       'noopener,noreferrer',
                     )
@@ -188,18 +119,7 @@ export default function Authenticate() {
                 >
                   🐙 {translations.home.github}
                 </button>
-                <button
-                  className="button button-secondary"
-                  onClick={() =>
-                    window.open(
-                      'https://calimero.network',
-                      '_blank',
-                      'noopener,noreferrer',
-                    )
-                  }
-                >
-                  🌐 {translations.home.website}
-                </button>
+                
               </div>
             </div>
           </div>

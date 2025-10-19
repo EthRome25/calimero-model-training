@@ -56,12 +56,17 @@ function AppContent() {
             let context = contexts[0]; // fallback to first context
 
             if (targetContextId) {
-              const foundContext = contexts.find(ctx => ctx.contextId === targetContextId);
+              const foundContext = contexts.find(
+                (ctx) => ctx.contextId === targetContextId,
+              );
               if (foundContext) {
                 context = foundContext;
                 console.log('Using specific context from env:', context);
               } else {
-                console.log('Target context not found, using first available:', context);
+                console.log(
+                  'Target context not found, using first available:',
+                  context,
+                );
               }
             } else {
               console.log('Using first available context:', context);
@@ -130,9 +135,7 @@ function AppContent() {
       return (
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <h2 className="text-xl font-semibold mb-2">
-              Loading MediNet...
-            </h2>
+            <h2 className="text-xl font-semibold mb-2">Loading MediNet...</h2>
             <p className="text-gray-600">Connecting to Calimero network</p>
             <div className="mt-4">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
@@ -329,7 +332,8 @@ const queryClient = new QueryClient({
 
 export default function App() {
   const [clientAppId] = useState<string>(
-    import.meta.env.VITE_APPLICATION_ID || 'Fm81EMsg45cuf6hRfERBvK1HaJaUC3k5cuw6dHofWz3r', // Application ID from environment or fallback
+    import.meta.env.VITE_APPLICATION_ID ||
+      'Fm81EMsg45cuf6hRfERBvK1HaJaUC3k5cuw6dHofWz3r', // Application ID from environment or fallback
   );
 
   return (

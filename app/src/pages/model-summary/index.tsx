@@ -20,7 +20,7 @@ function ModelSummaryContent({ api }: ModelSummaryPageProps) {
       // Clear cache first to force fresh data
       queryClient.invalidateQueries({ queryKey: ['currentModelName'] });
       queryClient.invalidateQueries({ queryKey: ['modelSummary'] });
-      
+
       // Force refresh by invalidating cache first
       const modelName = await refetchModelName();
       if (modelName.data) {
@@ -171,7 +171,7 @@ function ModelSummaryContent({ api }: ModelSummaryPageProps) {
           <div>
             <h2 className="horizontal-card__title" style={{ marginBottom: 'var(--spacing-m)' }}>Model Accuracy</h2>
             <p className="horizontal-card__description">
-              Overall performance metric for the trained model - the most important indicator for end users
+              Overall performance metric for the trained model
             </p>
           </div>
 
